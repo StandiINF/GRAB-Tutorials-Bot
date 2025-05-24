@@ -24,19 +24,12 @@ export const commands = [
         description: "Deck commands",
         options: [
             {
-                type: 1,
-                name: "card",
-                description: "Show a card from a deck",
-                options: [
-                    {
-                        type: 3,
-                        name: "title",
-                        description: "Title of the card",
-                        required: true,
+                type: 3,
+                name: "title",
+                description: "Title of the card",
+                required: true,
 
-                        choices: []
-                    }
-                ]
+                choices: []
             }
         ]
     }

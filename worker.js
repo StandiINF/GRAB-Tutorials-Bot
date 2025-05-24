@@ -26,11 +26,6 @@ async function fetchAllCards() {
     return allCards;
 }
 
-function getDeckCoverUrl(deckUrl) {
-    const deckName = deckUrl.split('/').pop().replace('.json', '');
-    return `https://assets.grab-tutorials.live/${deckName}/cover.png`;
-}
-
 export default {
     async fetch(request, env, ctx) {
 
@@ -119,40 +114,42 @@ export default {
                 });
 
             } else if (command_name === "deck") {
-                const subcommand = json.data.options[0]?.name;
-                if (subcommand === "card") {
-                    const selectedTitle = json.data.options[0].options[0].value;
-                    const allCards = await fetchAllCards();
-                    const card = allCards.find(c => c.title === selectedTitle);
+                // Changed: no subcommand, just the title option
+                const selectedTitle = json.data.options[0].value;
+                const allCards = await fetchAllCards();
+                const card = allCards.find(c => c.title === selectedTitle);
 
-                    if (!card) {
-                        return Response.json({
-                            type: 4,
-                            data: {
-                                content: "Card not found.",
-                                allowed_mentions: { parse: [] }
-                            }
-                        });
-                    }
-
-                    const coverUrl = getDeckCoverUrl(card._deckUrl);
-
+                if (!card) {
                     return Response.json({
                         type: 4,
                         data: {
-                            content: '',
-                            embeds: [
-                                {
-                                    title: card.title,
-                                    description: card.description || '',
-                                    image: { url: coverUrl },
-                                    url: coverUrl
-                                }
-                            ],
+                            content: "Card not found.",
                             allowed_mentions: { parse: [] }
                         }
                     });
                 }
+
+                // Use the "cover" property from the card, prepend base URL if needed
+                let coverUrl = card.cover || "";
+                if (coverUrl && !coverUrl.startsWith("http")) {
+                    coverUrl = `https://assets.grab-tutorials.live/${coverUrl.replace(/^\/+/, "")}`;
+                }
+
+                return Response.json({
+                    type: 4,
+                    data: {
+                        content: '',
+                        embeds: [
+                            {
+                                title: card.title,
+                                description: card.description || '',
+                                image: coverUrl ? { url: coverUrl } : undefined,
+                                url: coverUrl || undefined
+                            }
+                        ],
+                        allowed_mentions: { parse: [] }
+                    }
+                });
             }
         }
 
