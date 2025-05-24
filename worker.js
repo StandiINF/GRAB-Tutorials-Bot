@@ -1,6 +1,36 @@
 const nacl = require("tweetnacl");
 import { Buffer } from 'node:buffer';
 
+const CARD_JSON_URLS = [
+    "https://assets.grab-tutorials.live/basics.json",
+    "https://assets.grab-tutorials.live/editor.json",
+    "https://assets.grab-tutorials.live/animation.json",
+    "https://assets.grab-tutorials.live/trigger.json",
+    "https://assets.grab-tutorials.live/help.json"
+];
+
+async function fetchAllCards() {
+    const allCards = [];
+    for (const url of CARD_JSON_URLS) {
+        try {
+            const res = await fetch(url);
+            if (!res.ok) continue;
+            const data = await res.json();
+            if (Array.isArray(data)) {
+                for (const card of data) {
+                    allCards.push({ ...card, _deckUrl: url });
+                }
+            }
+        } catch (e) {}
+    }
+    return allCards;
+}
+
+function getDeckCoverUrl(deckUrl) {
+    const deckName = deckUrl.split('/').pop().replace('.json', '');
+    return `https://assets.grab-tutorials.live/${deckName}/cover.png`;
+}
+
 export default {
     async fetch(request, env, ctx) {
 
@@ -88,6 +118,41 @@ export default {
                     }
                 });
 
+            } else if (command_name === "deck") {
+                const subcommand = json.data.options[0]?.name;
+                if (subcommand === "card") {
+                    const selectedTitle = json.data.options[0].options[0].value;
+                    const allCards = await fetchAllCards();
+                    const card = allCards.find(c => c.title === selectedTitle);
+
+                    if (!card) {
+                        return Response.json({
+                            type: 4,
+                            data: {
+                                content: "Card not found.",
+                                allowed_mentions: { parse: [] }
+                            }
+                        });
+                    }
+
+                    const coverUrl = getDeckCoverUrl(card._deckUrl);
+
+                    return Response.json({
+                        type: 4,
+                        data: {
+                            content: '',
+                            embeds: [
+                                {
+                                    title: card.title,
+                                    description: card.description || '',
+                                    image: { url: coverUrl },
+                                    url: coverUrl
+                                }
+                            ],
+                            allowed_mentions: { parse: [] }
+                        }
+                    });
+                }
             }
         }
 
