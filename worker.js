@@ -143,8 +143,8 @@ export default {
                             {
                                 title: card.title,
                                 description: card.description || '',
-                                image: coverUrl ? { url: coverUrl } : undefined,
-                                url: coverUrl || undefined
+                                // Always include image if coverUrl is present
+                                image: coverUrl ? { url: coverUrl } : undefined
                             }
                         ],
                         allowed_mentions: { parse: [] }
