@@ -129,24 +129,24 @@ export default {
                     });
                 }
 
-                // Use the "cover" property from the card, prepend base URL if needed
                 let coverUrl = card.cover || "";
                 if (coverUrl && !coverUrl.startsWith("http")) {
                     coverUrl = `https://assets.grab-tutorials.live/${coverUrl.replace(/^\/+/, "")}`;
+                }
+
+                const embed = {
+                    title: card.title,
+                    description: card.description || ''
+                };
+                if (coverUrl) {
+                    embed.image = { url: coverUrl };
                 }
 
                 return Response.json({
                     type: 4,
                     data: {
                         content: '',
-                        embeds: [
-                            {
-                                title: card.title,
-                                description: card.description || '',
-                                // Always include image if coverUrl is present
-                                image: coverUrl ? { url: coverUrl } : undefined
-                            }
-                        ],
+                        embeds: [embed],
                         allowed_mentions: { parse: [] }
                     }
                 });
