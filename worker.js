@@ -129,7 +129,7 @@ export default {
                 const embed = {
                     title: card.title,
                     description: card.description || '',
-                    image: coverUrl ? { url: coverUrl, height: 155, width: 300 } : undefined
+                    image: coverUrl ? { url: coverUrl } : undefined
                 };
 
                 return Response.json({
