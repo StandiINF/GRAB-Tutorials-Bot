@@ -48,74 +48,58 @@ export default {
         if (json.type == 2) {
             const command_name = json.data.name;
 
-            if (command_name === "basic") {
+            if (command_name === "deck") {
+                const options = json.data.options || [];
+                const categoryOpt = options.find(opt => opt.name === "category");
+                const cardOpt = options.find(opt => opt.name === "card");
 
-                return Response.json({
-                    type: 4,
-                    data: {
-                        tts: false,
-                        content: "Success",
-                        embeds: [],
-                        allowed_mentions: { parse: [] }
-                    }
-                });
-
-            } else if (command_name === "embed") {
-
-                const embed = {
-                    "type": "rich",
-                    "title": "Basic embed",
-                    "description": "This is a description",
-                    "color": 0x5865F2,
-                    "fields": [
-                        {
-                            "name": "Field 1",
-                            "value": "Value 1",
-                            "inline": true
-                        },
-                        {
-                            "name": "Field 2",
-                            "value": "Value 2",
-                            "inline": false
+                if (!categoryOpt) {
+                    return Response.json({
+                        type: 4,
+                        data: {
+                            content: "Please provide a category.",
+                            allowed_mentions: { parse: [] }
                         }
-                    ],
-                    "url": "https://discord.com"
-                };
+                    });
+                }
 
-                return Response.json({
-                    type: 4,
-                    data: {
-                        tts: false,
-                        content: '',
-                        embeds: [embed],
-                        allowed_mentions: { parse: [] }
-                    }
-                });
-
-            } else if (command_name === "input") {
-
-                const input = json.data.options[0].value;
-
-                return Response.json({
-                    type: 4,
-                    data: {
-                        tts: false,
-                        content: `You entered: ${input}`,
-                        embeds: [],
-                        allowed_mentions: { parse: [] }
-                    }
-                });
-
-            } else if (command_name === "deck") {
-                const selectedTitle = json.data.options[0].value;
+                const category = categoryOpt.value;
                 const allCards = await fetchAllCards();
-                const card = allCards.find(c => c.title === selectedTitle);
+                const cardsInCategory = allCards.filter(c => (c.category || "").toLowerCase() === category.toLowerCase());
+
+                if (!cardOpt) {
+
+                    if (cardsInCategory.length === 0) {
+                        return Response.json({
+                            type: 4,
+                            data: {
+                                content: `No cards found in category "${category}".`,
+                                allowed_mentions: { parse: [] }
+                            }
+                        });
+                    }
+                    const titles = cardsInCategory.map(c => c.title).join('\n');
+                    return Response.json({
+                        type: 4,
+                        data: {
+                            content: `Cards in **${category}**:\n${titles}`,
+                            allowed_mentions: { parse: [] }
+                        }
+                    });
+                }
+
+                let cardTitle = cardOpt.value;
+                if (cardTitle.length > 0) {
+                    cardTitle = cardTitle.charAt(0).toUpperCase() + cardTitle.slice(1);
+                }
+
+                const card = cardsInCategory.find(c => c.title === cardTitle);
 
                 if (!card) {
                     return Response.json({
                         type: 4,
                         data: {
-                            content: "Card not found.",
+                            content: `Card "${cardTitle}" not found in category "${category}".`,
                             allowed_mentions: { parse: [] }
                         }
                     });
@@ -132,8 +116,12 @@ export default {
                 }
 
                 const embed = {
+                    type: "rich",
                     title: card.title,
                     description: firstCardUrl ? firstCardUrl : '',
+                    color: 0x5865F2,
+                    fields: [],
+                    url: coverUrl || undefined,
                     image: coverUrl ? { url: coverUrl } : undefined
                 };
 
