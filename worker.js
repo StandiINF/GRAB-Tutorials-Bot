@@ -42,6 +42,21 @@ export default {
                         const decks = await decksRes.json();
                         const found = decks.find(deck => deck.title === capitalizedDeckName);
                         if (found) {
+                            let color = undefined;
+                            switch (found.category) {
+                                case "basics":
+                                    color = 0x90CF90;
+                                    break;
+                                case "editor":
+                                    color = 0x7C4848;
+                                    break;
+                                case "animation":
+                                    color = 0x638DDD;
+                                    break;
+                                case "trigger":
+                                    color = 0xF89900;
+                                    break;
+                            }
                             const cardKeys = found.cards ? Object.keys(found.cards) : [];
                             if (cardKeys.length > 0) {
                                 const firstIndex = 0;
@@ -56,6 +71,7 @@ export default {
                                             embeds: [
                                                 {
                                                     title: found.title,
+                                                    color,
                                                     image: {
                                                         url: `https://assets.grab-tutorials.live/${firstCardLink}`,
                                                         width: 300,
@@ -66,19 +82,21 @@ export default {
                                             ],
                                             components: [
                                                 {
-                                                    type: 1, // Action row
+                                                    type: 1,
                                                     components: [
                                                         {
-                                                            type: 2, // Button
-                                                            style: 1, // Primary
+                                                            type: 2,
+                                                            style: 1,
                                                             label: "Back",
-                                                            custom_id: `deck_left_${capitalizedDeckName}_${firstIndex}`
+                                                            custom_id: `deck_left_${capitalizedDeckName}_0`,
+                                                            disabled: true
                                                         },
                                                         {
-                                                            type: 2, // Button
-                                                            style: 1, // Primary
+                                                            type: 2,
+                                                            style: 1,
                                                             label: "Next",
-                                                            custom_id: `deck_right_${capitalizedDeckName}_${firstIndex}`
+                                                            custom_id: `deck_right_${capitalizedDeckName}_0`,
+                                                            disabled: cardKeys.length <= 1
                                                         }
                                                     ]
                                                 }
@@ -112,9 +130,8 @@ export default {
             }
         }
 
-        // Handle button interactions
         if (json.type == 3 && json.data.custom_id?.startsWith("deck_")) {
-            // custom_id format: deck_{direction}_{DeckName}_{currentIndex}
+
             const [ , direction, deckName, indexStr ] = json.data.custom_id.split("_");
             const currentIndex = parseInt(indexStr, 10);
 
@@ -126,6 +143,21 @@ export default {
                     const decks = await decksRes.json();
                     const found = decks.find(deck => deck.title === deckName);
                     if (found) {
+                        let color = undefined;
+                        switch (found.category) {
+                            case "basics":
+                                color = 0x90CF90;
+                                break;
+                            case "editor":
+                                color = 0x7C4848;
+                                break;
+                            case "animation":
+                                color = 0x638DDD;
+                                break;
+                            case "trigger":
+                                color = 0xF89900;
+                                break;
+                        }
                         const cardKeys = found.cards ? Object.keys(found.cards) : [];
                         if (cardKeys.length > 0) {
                             let newIndex = direction === "left" ? currentIndex - 1 : currentIndex + 1;
@@ -135,12 +167,13 @@ export default {
                             const cardLink = card?.link;
                             if (cardLink) {
                                 return Response.json({
-                                    type: 7, // Update message
+                                    type: 7,
                                     data: {
                                         content: "",
                                         embeds: [
                                             {
                                                 title: found.title,
+                                                color,
                                                 image: {
                                                     url: `https://assets.grab-tutorials.live/${cardLink}`,
                                                     width: 300,
@@ -156,14 +189,16 @@ export default {
                                                     {
                                                         type: 2,
                                                         style: 1,
-                                                        label: "⬅️",
-                                                        custom_id: `deck_left_${deckName}_${newIndex}`
+                                                        label: "Back",
+                                                        custom_id: `deck_left_${deckName}_${newIndex}`,
+                                                        disabled: newIndex === 0
                                                     },
                                                     {
                                                         type: 2,
                                                         style: 1,
-                                                        label: "➡️",
-                                                        custom_id: `deck_right_${deckName}_${newIndex}`
+                                                        label: "Next",
+                                                        custom_id: `deck_right_${deckName}_${newIndex}`,
+                                                        disabled: newIndex === cardKeys.length - 1
                                                     }
                                                 ]
                                             }

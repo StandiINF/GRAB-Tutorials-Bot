@@ -1,7 +1,7 @@
 export const commands = [
     {
         name: "deck",
-        description: "Get information about a deck",
+        description: "Get a deck's cards",
         options: [
             {
                 name: "name",
