@@ -47,7 +47,7 @@ export default {
                                 const firstCard = found.cards[cardKeys[0]];
                                 const firstCardLink = firstCard?.link;
                                 if (firstCardLink) {
-                                    replyContent = `First card link: ${firstCardLink}`;
+                                    replyContent = `First card link: https://assets.grab-tutorials.live/${firstCardLink}`;
                                 } else {
                                     replyContent = `Deck "${found.title}" found, but no card link available.`;
                                 }
