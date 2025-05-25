@@ -63,6 +63,20 @@ export default {
                                 const firstCard = found.cards[cardKeys[firstIndex]];
                                 const firstCardLink = firstCard?.link;
                                 if (firstCardLink) {
+                                    // Fetch help data
+                                    let helpText = "";
+                                    try {
+                                        const helpRes = await fetch("https://assets.grab-tutorials.live/help.json");
+                                        if (helpRes.ok) {
+                                            const helpJson = await helpRes.json();
+                                            const helpKey = firstCard?.help;
+                                            if (helpKey && helpJson[helpKey]) {
+                                                helpText = helpJson[helpKey];
+                                            }
+                                        }
+                                    } catch (e) {
+                                        // ignore help fetch errors, just show no help
+                                    }
                                     return Response.json({
                                         type: 4,
                                         data: {
@@ -77,7 +91,7 @@ export default {
                                                         width: 300,
                                                         height: 154.91
                                                     },
-                                                    description: `*Card 1 of ${cardKeys.length}*`
+                                                    description: `*Card 1 of ${cardKeys.length}*\n\n${helpText ? `**Help:**\n${helpText}` : ""}`
                                                 }
                                             ],
                                             components: [
@@ -166,6 +180,20 @@ export default {
                             const card = found.cards[cardKeys[newIndex]];
                             const cardLink = card?.link;
                             if (cardLink) {
+                                // Fetch help data
+                                let helpText = "";
+                                try {
+                                    const helpRes = await fetch("https://assets.grab-tutorials.live/help.json");
+                                    if (helpRes.ok) {
+                                        const helpJson = await helpRes.json();
+                                        const helpKey = card?.help;
+                                        if (helpKey && helpJson[helpKey]) {
+                                            helpText = helpJson[helpKey];
+                                        }
+                                    }
+                                } catch (e) {
+                                    // ignore help fetch errors, just show no help
+                                }
                                 return Response.json({
                                     type: 7,
                                     data: {
@@ -179,7 +207,7 @@ export default {
                                                     width: 300,
                                                     height: 154.91
                                                 },
-                                                description: `*Card ${newIndex + 1} of ${cardKeys.length}*`
+                                                description: `*Card ${newIndex + 1} of ${cardKeys.length}*\n\n${helpText ? `**Help:**\n${helpText}` : ""}`
                                             }
                                         ],
                                         components: [
