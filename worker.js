@@ -135,20 +135,17 @@ export default {
                 }
 
                 const embed = {
-                    type: "rich",
                     title: card.title,
                     description: imageUrl ? imageUrl : '',
                     color: 0x5865F2,
-                    fields: []
+                    fields: [],
+                    image: imageUrl ? { url: imageUrl } : undefined
                 };
-                if (imageUrl) {
-                    embed.image = { url: imageUrl };
-                }
 
                 return Response.json({
                     type: 4,
                     data: {
-                        content: '',
+                        content: imageUrl ? imageUrl : '',
                         embeds: [embed],
                         allowed_mentions: { parse: [] }
                     }
