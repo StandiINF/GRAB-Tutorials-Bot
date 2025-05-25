@@ -1,22 +1,14 @@
 export const commands = [
     {
-        name: "basic",
-        description: "Basic command",
-    },
-    {
-        name: "embed",
-        description: "Embed command",
-    },
-    {
-        name: "input",
-        description: "Command with input",
+        name: "deck",
+        description: "Get information about a deck",
         options: [
             {
-                name: "input",
-                description: "String input",
-                required: true,
-                type: 3
+                name: "name",
+                description: "The name of the deck",
+                type: 3,
+                required: true
             }
         ]
-    }
+    },
 ];

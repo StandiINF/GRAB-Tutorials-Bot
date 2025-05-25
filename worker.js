@@ -30,68 +30,39 @@ export default {
         if (json.type == 2) {
             const command_name = json.data.name;
 
-            if (command_name === "basic") {
+            if (command_name === "deck") {
+                const deckNameInput = json.data.options?.find(opt => opt.name === "name")?.value || "";
+                const capitalizedDeckName = deckNameInput.charAt(0).toUpperCase() + deckNameInput.slice(1);
 
-                return Response.json({
-                    type: 4,
-                    data: {
-                        tts: false,
-                        content: "Success",
-                        embeds: [],
-                        allowed_mentions: { parse: [] }
-                    }
-                });
-
-            } else if (command_name === "embed") {
-
-                const embed = {
-                    "type": "rich",
-                    "title": "Basic embed",
-                    "description": "This is a description",
-                    "color": 0x5865F2,
-                    "fields": [
-                        {
-                            "name": "Field 1",
-                            "value": "Value 1",
-                            "inline": true
-                        },
-                        {
-                            "name": "Field 2",
-                            "value": "Value 2",
-                            "inline": false
+                // Fetch decks JSON and search for a matching title
+                const decksUrl = "https://assets.grab-tutorials.live/decks-png.json";
+                let replyContent = `Deck "${capitalizedDeckName}" not found.`;
+                try {
+                    const decksRes = await fetch(decksUrl);
+                    if (decksRes.ok) {
+                        const decks = await decksRes.json();
+                        const found = decks.find(deck => deck.title === capitalizedDeckName);
+                        if (found) {
+                            replyContent = `Found deck: ${found.title}`;
                         }
-                    ],
-                    "url": "https://discord.com"
-                };
-
-                return Response.json({
-                    type: 4,
-                    data: {
-                        tts: false,
-                        content: '',
-                        embeds: [embed],
-                        allowed_mentions: { parse: [] }
+                    } else {
+                        replyContent = "Failed to fetch decks data.";
                     }
-                });
-
-            } else if (command_name === "input") {
-
-                const input = json.data.options[0].value;
+                } catch (e) {
+                    replyContent = "Error fetching decks data.";
+                }
 
                 return Response.json({
                     type: 4,
                     data: {
                         tts: false,
-                        content: `You entered: ${input}`,
+                        content: replyContent,
                         embeds: [],
                         allowed_mentions: { parse: [] }
                     }
                 });
-
             }
         }
-
-        // Handle other requests
         return new Response("invalid request type", {status: 400});
 
     },
