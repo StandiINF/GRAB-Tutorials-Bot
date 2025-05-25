@@ -20,7 +20,7 @@ export const commands = [
                 name: "card",
                 description: "Title of the card",
                 required: true,
-                choices: []
+                autocomplete: true
             }
         ]
     }
