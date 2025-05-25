@@ -44,7 +44,8 @@ export default {
                         if (found) {
                             const cardKeys = found.cards ? Object.keys(found.cards) : [];
                             if (cardKeys.length > 0) {
-                                const firstCard = found.cards[cardKeys[0]];
+                                const firstIndex = 0;
+                                const firstCard = found.cards[cardKeys[firstIndex]];
                                 const firstCardLink = firstCard?.link;
                                 if (firstCardLink) {
                                     return Response.json({
@@ -57,6 +58,25 @@ export default {
                                                     image: {
                                                         url: `https://assets.grab-tutorials.live/${firstCardLink}`
                                                     }
+                                                }
+                                            ],
+                                            components: [
+                                                {
+                                                    type: 1, // Action row
+                                                    components: [
+                                                        {
+                                                            type: 2, // Button
+                                                            style: 1, // Primary
+                                                            label: "⬅️",
+                                                            custom_id: `deck_left_${capitalizedDeckName}_${firstIndex}`
+                                                        },
+                                                        {
+                                                            type: 2, // Button
+                                                            style: 1, // Primary
+                                                            label: "➡️",
+                                                            custom_id: `deck_right_${capitalizedDeckName}_${firstIndex}`
+                                                        }
+                                                    ]
                                                 }
                                             ],
                                             allowed_mentions: { parse: [] }
@@ -86,6 +106,86 @@ export default {
                     }
                 });
             }
+        }
+
+        // Handle button interactions
+        if (json.type == 3 && json.data.custom_id?.startsWith("deck_")) {
+            // custom_id format: deck_{direction}_{DeckName}_{currentIndex}
+            const [ , direction, deckName, indexStr ] = json.data.custom_id.split("_");
+            const currentIndex = parseInt(indexStr, 10);
+
+            const decksUrl = "https://assets.grab-tutorials.live/decks-png.json";
+            let replyContent = `Deck "${deckName}" not found.`;
+            try {
+                const decksRes = await fetch(decksUrl);
+                if (decksRes.ok) {
+                    const decks = await decksRes.json();
+                    const found = decks.find(deck => deck.title === deckName);
+                    if (found) {
+                        const cardKeys = found.cards ? Object.keys(found.cards) : [];
+                        if (cardKeys.length > 0) {
+                            let newIndex = direction === "left" ? currentIndex - 1 : currentIndex + 1;
+                            if (newIndex < 0) newIndex = cardKeys.length - 1;
+                            if (newIndex >= cardKeys.length) newIndex = 0;
+                            const card = found.cards[cardKeys[newIndex]];
+                            const cardLink = card?.link;
+                            if (cardLink) {
+                                return Response.json({
+                                    type: 7, // Update message
+                                    data: {
+                                        content: "",
+                                        embeds: [
+                                            {
+                                                image: {
+                                                    url: `https://assets.grab-tutorials.live/${cardLink}`
+                                                }
+                                            }
+                                        ],
+                                        components: [
+                                            {
+                                                type: 1,
+                                                components: [
+                                                    {
+                                                        type: 2,
+                                                        style: 1,
+                                                        label: "⬅️",
+                                                        custom_id: `deck_left_${deckName}_${newIndex}`
+                                                    },
+                                                    {
+                                                        type: 2,
+                                                        style: 1,
+                                                        label: "➡️",
+                                                        custom_id: `deck_right_${deckName}_${newIndex}`
+                                                    }
+                                                ]
+                                            }
+                                        ],
+                                        allowed_mentions: { parse: [] }
+                                    }
+                                });
+                            } else {
+                                replyContent = `Deck "${found.title}" found, but no card link available.`;
+                            }
+                        } else {
+                            replyContent = `Deck "${found.title}" found, but no cards available.`;
+                        }
+                    }
+                } else {
+                    replyContent = "Failed to fetch decks data.";
+                }
+            } catch (e) {
+                replyContent = "Error fetching decks data.";
+            }
+
+            return Response.json({
+                type: 7,
+                data: {
+                    content: replyContent,
+                    embeds: [],
+                    components: [],
+                    allowed_mentions: { parse: [] }
+                }
+            });
         }
         return new Response("invalid request type", {status: 400});
 
