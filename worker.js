@@ -55,9 +55,13 @@ export default {
                                             content: "",
                                             embeds: [
                                                 {
+                                                    title: found.title,
                                                     image: {
-                                                        url: `https://assets.grab-tutorials.live/${firstCardLink}`
-                                                    }
+                                                        url: `https://assets.grab-tutorials.live/${firstCardLink}`,
+                                                        width: 300,
+                                                        height: 154.91
+                                                    },
+                                                    description: `*Card 1 of ${cardKeys.length}*`
                                                 }
                                             ],
                                             components: [
@@ -67,13 +71,13 @@ export default {
                                                         {
                                                             type: 2, // Button
                                                             style: 1, // Primary
-                                                            label: "⬅️",
+                                                            label: "Back",
                                                             custom_id: `deck_left_${capitalizedDeckName}_${firstIndex}`
                                                         },
                                                         {
                                                             type: 2, // Button
                                                             style: 1, // Primary
-                                                            label: "➡️",
+                                                            label: "Next",
                                                             custom_id: `deck_right_${capitalizedDeckName}_${firstIndex}`
                                                         }
                                                     ]
@@ -136,9 +140,13 @@ export default {
                                         content: "",
                                         embeds: [
                                             {
+                                                title: found.title,
                                                 image: {
-                                                    url: `https://assets.grab-tutorials.live/${cardLink}`
-                                                }
+                                                    url: `https://assets.grab-tutorials.live/${cardLink}`,
+                                                    width: 300,
+                                                    height: 154.91
+                                                },
+                                                description: `*Card ${newIndex + 1} of ${cardKeys.length}*`
                                             }
                                         ],
                                         components: [
