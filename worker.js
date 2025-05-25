@@ -25,7 +25,6 @@ async function fetchAllCards() {
 export default {
     async fetch(request, env, ctx) {
 
-        // Handle invalid requests
         const signature = request.headers.get("x-signature-ed25519");
         const timestamp = request.headers.get("x-signature-timestamp");
         const body = await request.text();
@@ -39,7 +38,6 @@ export default {
             return new Response("invalid request signature", {status: 401});
         }
 
-        // Handle ping requests
         const json = JSON.parse(body);
         if (json.type == 1) {
             return Response.json({
@@ -47,7 +45,6 @@ export default {
             });
         }
 
-        // Handle command requests
         if (json.type == 2) {
             const command_name = json.data.name;
 
@@ -129,7 +126,6 @@ export default {
                     coverUrl = `https://assets.grab-tutorials.live/${coverUrl.replace(/^\/+/, "")}`;
                 }
 
-                // Always display the PNG image at 300x154.91px
                 const embed = {
                     title: card.title,
                     description: card.description || '',
@@ -147,7 +143,6 @@ export default {
             }
         }
 
-        // Handle other requests
         return new Response("invalid request type", {status: 400});
 
     },
