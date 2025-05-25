@@ -126,9 +126,14 @@ export default {
                     coverUrl = `https://assets.grab-tutorials.live/${coverUrl.replace(/^\/+/, "")}`;
                 }
 
+                let firstCardUrl = card.first || "";
+                if (firstCardUrl && !firstCardUrl.startsWith("http")) {
+                    firstCardUrl = `https://assets.grab-tutorials.live/${firstCardUrl.replace(/^\/+/, "")}`;
+                }
+
                 const embed = {
                     title: card.title,
-                    description: card.description || '',
+                    description: firstCardUrl ? firstCardUrl : '',
                     image: coverUrl ? { url: coverUrl } : undefined
                 };
 
