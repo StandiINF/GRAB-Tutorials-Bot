@@ -154,6 +154,24 @@ export default {
                     }
                 });
             }
+            if (command_name === "test") {
+                const imageUrl = "https://assets.grab-tutorials.live/png/basics/movement/walking/walking-1.png";
+                const embed = {
+                    title: "Test Image",
+                    description: imageUrl,
+                    color: 0x5865F2,
+                    fields: [],
+                    image: { url: imageUrl }
+                };
+                return Response.json({
+                    type: 4,
+                    data: {
+                        content: '',
+                        embeds: [embed],
+                        allowed_mentions: { parse: [] }
+                    }
+                });
+            }
         }
 
         return new Response("invalid request type", {status: 400});

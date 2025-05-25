@@ -23,5 +23,9 @@ export const commands = [
                 autocomplete: true
             }
         ]
+    },
+    {
+        name: "test",
+        description: "Test image embed"
     }
 ];
