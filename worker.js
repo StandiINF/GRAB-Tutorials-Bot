@@ -2,11 +2,7 @@ const nacl = require("tweetnacl");
 import { Buffer } from 'node:buffer';
 
 const CARD_JSON_URLS = [
-    "https://assets.grab-tutorials.live/basics.json",
-    "https://assets.grab-tutorials.live/editor.json",
-    "https://assets.grab-tutorials.live/animation.json",
-    "https://assets.grab-tutorials.live/trigger.json",
-    "https://assets.grab-tutorials.live/help.json"
+    "https://assets.grab-tutorials.live/decks-png.json"
 ];
 
 async function fetchAllCards() {
@@ -114,7 +110,6 @@ export default {
                 });
 
             } else if (command_name === "deck") {
-                // Changed: no subcommand, just the title option
                 const selectedTitle = json.data.options[0].value;
                 const allCards = await fetchAllCards();
                 const card = allCards.find(c => c.title === selectedTitle);
@@ -134,13 +129,12 @@ export default {
                     coverUrl = `https://assets.grab-tutorials.live/${coverUrl.replace(/^\/+/, "")}`;
                 }
 
+                // Always display the PNG image at 300x154.91px
                 const embed = {
                     title: card.title,
-                    description: card.description || ''
+                    description: card.description || '',
+                    image: coverUrl ? { url: coverUrl, height: 155, width: 300 } : undefined
                 };
-                if (coverUrl) {
-                    embed.image = { url: coverUrl };
-                }
 
                 return Response.json({
                     type: 4,
