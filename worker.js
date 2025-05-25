@@ -136,7 +136,7 @@ export default {
 
                 const embed = {
                     title: card.title,
-                    description: imageUrl ? imageUrl : '',
+                    description: '',
                     color: 0x5865F2,
                     fields: [],
                     image: imageUrl ? { url: imageUrl } : undefined
