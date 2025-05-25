@@ -42,16 +42,15 @@ export default {
 
         if (json.type === 4 && json.data?.name === "deck") {
             const options = json.data.options || [];
-            const focused = json.data.options.find(opt => opt.focused);
+            const focused = options.find(opt => opt.focused);
             const categoryOpt = options.find(opt => opt.name === "category");
             if (focused && focused.name === "card" && categoryOpt) {
                 const category = categoryOpt.value;
                 const allCards = await fetchAllCards();
                 const cardsInCategory = allCards.filter(c => (c.category || "").toLowerCase() === category.toLowerCase());
-
-                const userInput = focused.value?.toLowerCase() || "";
+                const userInput = (focused.value || "").toLowerCase();
                 const choices = cardsInCategory
-                    .filter(c => c.title.toLowerCase().includes(userInput))
+                    .filter(c => c.title && c.title.toLowerCase().includes(userInput))
                     .slice(0, 25)
                     .map(c => ({
                         name: c.title,
@@ -59,22 +58,17 @@ export default {
                     }));
                 return Response.json({
                     type: 4,
-                    data: {
-                        choices
-                    }
+                    data: { choices }
                 });
             }
         }
 
         if (json.type == 1) {
-            return Response.json({
-                type: 1
-            });
+            return Response.json({ type: 1 });
         }
 
         if (json.type == 2) {
             const command_name = json.data.name;
-
             if (command_name === "deck") {
                 const options = json.data.options || [];
                 const categoryOpt = options.find(opt => opt.name === "category");
@@ -104,11 +98,15 @@ export default {
                             }
                         });
                     }
-                    const titles = cardsInCategory.map(c => c.title).join('\n');
+                    const titles = cardsInCategory.map(c => c.title).filter(Boolean);
+                    let content = `Cards in **${category}**:\n${titles.join('\n')}`;
+                    if (content.length > 1900) {
+                        content = content.slice(0, 1900) + "\n...truncated";
+                    }
                     return Response.json({
                         type: 4,
                         data: {
-                            content: `Cards in **${category}**:\n${titles}`,
+                            content,
                             allowed_mentions: { parse: [] }
                         }
                     });
@@ -141,9 +139,11 @@ export default {
                     title: card.title,
                     description: imageUrl ? imageUrl : '',
                     color: 0x5865F2,
-                    fields: [],
-                    image: imageUrl ? { url: imageUrl } : undefined
+                    fields: []
                 };
+                if (imageUrl) {
+                    embed.image = { url: imageUrl };
+                }
 
                 return Response.json({
                     type: 4,
@@ -157,6 +157,5 @@ export default {
         }
 
         return new Response("invalid request type", {status: 400});
-
     },
 };
