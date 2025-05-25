@@ -34,7 +34,6 @@ export default {
                 const deckNameInput = json.data.options?.find(opt => opt.name === "name")?.value || "";
                 const capitalizedDeckName = deckNameInput.charAt(0).toUpperCase() + deckNameInput.slice(1);
 
-                // Fetch decks JSON and search for a matching title
                 const decksUrl = "https://assets.grab-tutorials.live/decks-png.json";
                 let replyContent = `Deck "${capitalizedDeckName}" not found.`;
                 try {
@@ -43,9 +42,15 @@ export default {
                         const decks = await decksRes.json();
                         const found = decks.find(deck => deck.title === capitalizedDeckName);
                         if (found) {
-                            const firstCardLink = found.cards?.[0]?.link;
-                            if (firstCardLink) {
-                                replyContent = `First card link: ${firstCardLink}`;
+                            const cardKeys = found.cards ? Object.keys(found.cards) : [];
+                            if (cardKeys.length > 0) {
+                                const firstCard = found.cards[cardKeys[0]];
+                                const firstCardLink = firstCard?.link;
+                                if (firstCardLink) {
+                                    replyContent = `First card link: ${firstCardLink}`;
+                                } else {
+                                    replyContent = `Deck "${found.title}" found, but no card link available.`;
+                                }
                             } else {
                                 replyContent = `Deck "${found.title}" found, but no cards available.`;
                             }
