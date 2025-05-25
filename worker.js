@@ -39,6 +39,33 @@ export default {
         }
 
         const json = JSON.parse(body);
+
+        if (json.type === 4 && json.data?.name === "deck") {
+            const options = json.data.options || [];
+            const focused = json.data.options.find(opt => opt.focused);
+            const categoryOpt = options.find(opt => opt.name === "category");
+            if (focused && focused.name === "card" && categoryOpt) {
+                const category = categoryOpt.value;
+                const allCards = await fetchAllCards();
+                const cardsInCategory = allCards.filter(c => (c.category || "").toLowerCase() === category.toLowerCase());
+
+                const userInput = focused.value?.toLowerCase() || "";
+                const choices = cardsInCategory
+                    .filter(c => c.title.toLowerCase().includes(userInput))
+                    .slice(0, 25)
+                    .map(c => ({
+                        name: c.title,
+                        value: c.title
+                    }));
+                return Response.json({
+                    type: 4,
+                    data: {
+                        choices
+                    }
+                });
+            }
+        }
+
         if (json.type == 1) {
             return Response.json({
                 type: 1
@@ -68,7 +95,6 @@ export default {
                 const cardsInCategory = allCards.filter(c => (c.category || "").toLowerCase() === category.toLowerCase());
 
                 if (!cardOpt) {
-
                     if (cardsInCategory.length === 0) {
                         return Response.json({
                             type: 4,
@@ -105,24 +131,18 @@ export default {
                     });
                 }
 
-                let coverUrl = card.cover || "";
-                if (coverUrl && !coverUrl.startsWith("http")) {
-                    coverUrl = `https://assets.grab-tutorials.live/${coverUrl.replace(/^\/+/, "")}`;
-                }
-
-                let firstCardUrl = card.first || "";
-                if (firstCardUrl && !firstCardUrl.startsWith("http")) {
-                    firstCardUrl = `https://assets.grab-tutorials.live/${firstCardUrl.replace(/^\/+/, "")}`;
+                let imageUrl = card.image || card.url || card.first || "";
+                if (imageUrl && !imageUrl.startsWith("http")) {
+                    imageUrl = `https://assets.grab-tutorials.live/${imageUrl.replace(/^\/+/, "")}`;
                 }
 
                 const embed = {
                     type: "rich",
                     title: card.title,
-                    description: firstCardUrl ? firstCardUrl : '',
+                    description: imageUrl ? imageUrl : '',
                     color: 0x5865F2,
                     fields: [],
-                    url: coverUrl || undefined,
-                    image: coverUrl ? { url: coverUrl } : undefined
+                    image: imageUrl ? { url: imageUrl } : undefined
                 };
 
                 return Response.json({
