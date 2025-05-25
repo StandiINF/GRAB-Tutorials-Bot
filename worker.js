@@ -43,7 +43,12 @@ export default {
                         const decks = await decksRes.json();
                         const found = decks.find(deck => deck.title === capitalizedDeckName);
                         if (found) {
-                            replyContent = `Found deck: ${found.title}`;
+                            const firstCardLink = found.cards?.[0]?.link;
+                            if (firstCardLink) {
+                                replyContent = `First card link: ${firstCardLink}`;
+                            } else {
+                                replyContent = `Deck "${found.title}" found, but no cards available.`;
+                            }
                         }
                     } else {
                         replyContent = "Failed to fetch decks data.";
