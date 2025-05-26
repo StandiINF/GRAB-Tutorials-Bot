@@ -264,6 +264,33 @@ export default {
                 }
             });
         }
+
+        // Handle autocomplete interaction
+        if (json.type === 4 && json.data?.name === "deck" && json.data?.options?.[0]?.name === "name") {
+            try {
+                const decksRes = await fetch("https://assets.grab-tutorials.live/decks-png.json");
+                if (decksRes.ok) {
+                    const decks = await decksRes.json();
+                    const choices = decks.map(deck => ({
+                        name: deck.title,
+                        value: deck.title
+                    })).slice(0, 25); // Discord allows max 25 choices
+                    return Response.json({
+                        type: 8,
+                        data: {
+                            choices
+                        }
+                    });
+                }
+            } catch (e) {
+                // ignore errors, fall through
+            }
+            return Response.json({
+                type: 8,
+                data: { choices: [] }
+            });
+        }
+
         return new Response("invalid request type", {status: 400});
 
     },
