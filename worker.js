@@ -62,21 +62,24 @@ export default {
                                 const firstIndex = 0;
                                 const firstCard = found.cards[cardKeys[firstIndex]];
                                 const firstCardLink = firstCard?.link;
-                                if (firstCardLink) {
-                                    // Fetch help data
-                                    let helpText = "";
+                                let helpText = "";
+                                if (firstCard?.help) {
                                     try {
                                         const helpRes = await fetch("https://assets.grab-tutorials.live/help.json");
                                         if (helpRes.ok) {
-                                            const helpJson = await helpRes.json();
-                                            const helpKey = firstCard?.help;
-                                            if (helpKey && helpJson[helpKey]) {
-                                                helpText = helpJson[helpKey];
+                                            const helpArr = await helpRes.json();
+                                            const helpObj = Array.isArray(helpArr)
+                                                ? helpArr.find(h => h.id === firstCard.help)
+                                                : helpArr[firstCard.help] || (helpArr.find && helpArr.find(h => h.id === firstCard.help));
+                                            if (helpObj && helpObj.text) {
+                                                helpText = helpObj.text;
                                             }
                                         }
                                     } catch (e) {
-                                        // ignore help fetch errors, just show no help
+                                        // ignore help fetch errors
                                     }
+                                }
+                                if (firstCardLink) {
                                     return Response.json({
                                         type: 4,
                                         data: {
@@ -182,21 +185,24 @@ export default {
                             if (newIndex >= cardKeys.length) newIndex = 0;
                             const card = found.cards[cardKeys[newIndex]];
                             const cardLink = card?.link;
-                            if (cardLink) {
-                                // Fetch help data
-                                let helpText = "";
+                            let helpText = "";
+                            if (card?.help) {
                                 try {
                                     const helpRes = await fetch("https://assets.grab-tutorials.live/help.json");
                                     if (helpRes.ok) {
-                                        const helpJson = await helpRes.json();
-                                        const helpKey = card?.help;
-                                        if (helpKey && helpJson[helpKey]) {
-                                            helpText = helpJson[helpKey];
+                                        const helpArr = await helpRes.json();
+                                        const helpObj = Array.isArray(helpArr)
+                                            ? helpArr.find(h => h.id === card.help)
+                                            : helpArr[card.help] || (helpArr.find && helpArr.find(h => h.id === card.help));
+                                        if (helpObj && helpObj.text) {
+                                            helpText = helpObj.text;
                                         }
                                     }
                                 } catch (e) {
-                                    // ignore help fetch errors, just show no help
+                                    // ignore help fetch errors
                                 }
+                            }
+                            if (cardLink) {
                                 return Response.json({
                                     type: 7,
                                     data: {
