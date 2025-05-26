@@ -169,12 +169,45 @@ export default {
                             }
                         });
                     }
-                    await env.LINK_CODES.delete(code);
                     const entry = JSON.parse(value);
+                    const alias = entry.alias;
+                    const discordId = json.member?.user?.id || json.user?.id;
+                    if (!alias || !discordId) {
+                        return Response.json({
+                            type: 4,
+                            data: {
+                                content: "Could not determine alias or Discord ID.",
+                                allowed_mentions: { parse: [] }
+                            }
+                        });
+                    }
+
+                    // Check if already linked in SQL
+                    const checkRes = await env.DB.prepare(
+                        "SELECT 1 FROM links WHERE alias = ? OR discord_id = ? LIMIT 1"
+                    ).bind(alias, discordId).first();
+                    if (checkRes) {
+                        await env.LINK_CODES.delete(code);
+                        return Response.json({
+                            type: 4,
+                            data: {
+                                content: "This account is already linked.",
+                                allowed_mentions: { parse: [] }
+                            }
+                        });
+                    }
+
+                    // Insert into SQL
+                    await env.DB.prepare(
+                        "INSERT INTO links (alias, discord_id) VALUES (?, ?)"
+                    ).bind(alias, discordId).run();
+
+                    await env.LINK_CODES.delete(code);
+
                     return Response.json({
                         type: 4,
                         data: {
-                            content: `Successfully linked your Discord to GRAB Tutorials account: **${entry.alias}**!`,
+                            content: `Successfully linked your Discord to GRAB Tutorials account: **${alias}**!`,
                             allowed_mentions: { parse: [] }
                         }
                     });
