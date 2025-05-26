@@ -5,3 +5,7 @@ compatibility_flags = [ "nodejs_compat" ]
 kv_namespaces = [
   { binding = "LINK_CODES", id = "7a870e135ee34675b8065a1a60815363" }
 ]
+[[d1_databases]]
+binding = "DB"
+database_name = "aliases-db"
+database_id = "b51d611c-a31a-49e9-ae8a-a231618513e5"
