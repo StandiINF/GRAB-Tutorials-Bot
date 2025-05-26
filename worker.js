@@ -209,7 +209,6 @@ export default {
                         });
                     }
 
-                    // Insert into SQL
                     try {
                         await env.DB.prepare(
                             "INSERT INTO links (alias, discord_id) VALUES (?, ?)"
@@ -258,26 +257,27 @@ export default {
                             }
                         });
                     }
-                    const res = await fetch('https://api.grab-tutorials.live/accountInfo', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ discordId })
-                    });
-                    if (!res.ok) {
+                    // Query SQL for alias linked to this discordId
+                    let row;
+                    try {
+                        row = await env.DB.prepare(
+                            "SELECT alias FROM links WHERE discord_id = ? LIMIT 1"
+                        ).bind(discordId).first();
+                    } catch (sqlErr) {
+                        console.error("SQL error in /account:", sqlErr);
                         return Response.json({
                             type: 4,
                             data: {
-                                content: "You aren't logged in.",
+                                content: "Database error: " + sqlErr.message,
                                 allowed_mentions: { parse: [] }
                             }
                         });
                     }
-                    const data = await res.json();
-                    if (data.success && data.alias) {
+                    if (row && row.alias) {
                         return Response.json({
                             type: 4,
                             data: {
-                                content: `Your GRAB Tutorials account: **${data.alias}**`,
+                                content: `Your GRAB Tutorials account: **${row.alias}**`,
                                 allowed_mentions: { parse: [] }
                             }
                         });
@@ -291,6 +291,7 @@ export default {
                         });
                     }
                 } catch (e) {
+                    console.error("Unexpected error in /account:", e);
                     return Response.json({
                         type: 4,
                         data: {
