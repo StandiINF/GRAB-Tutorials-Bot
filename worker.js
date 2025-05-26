@@ -31,7 +31,6 @@ export default {
             const command_name = json.data.name;
 
             if (command_name === "deck") {
-                // Immediately defer the reply
                 ctx.waitUntil((async () => {
                     const deckNameInput = json.data.options?.find(opt => opt.name === "name")?.value || "";
                     const deckNameLower = deckNameInput.toLowerCase();
@@ -155,7 +154,6 @@ export default {
                         };
                     }
 
-                    // Send followup via Discord webhook
                     const webhookUrl = `https://discord.com/api/v10/webhooks/${env.DISCORD_APPLICATION_ID}/${json.token}/messages/@original`;
                     await fetch(webhookUrl, {
                         method: "PATCH",
@@ -164,7 +162,6 @@ export default {
                     });
                 })());
 
-                // Respond immediately to Discord to defer the reply
                 return Response.json({ type: 5 });
             }
         }
@@ -181,7 +178,6 @@ export default {
                 const decksRes = await fetch(decksUrl);
                 if (decksRes.ok) {
                     const decks = await decksRes.json();
-                    // Lowercase all titles for lookup
                     const found = decks.find(deck => (deck.title || "").toLowerCase() === deckNameLower);
                     if (found) {
                         let color = undefined;
