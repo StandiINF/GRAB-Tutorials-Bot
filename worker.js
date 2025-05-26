@@ -152,7 +152,7 @@ export default {
                     return Response.json({
                         type: 4,
                         data: {
-                            content: "You must provide a 6-digit code.",
+                            content: "hi its me k1dfun, i need a 6 digit code.",
                             allowed_mentions: { parse: [] }
                         }
                     });
@@ -164,7 +164,7 @@ export default {
                         return Response.json({
                             type: 4,
                             data: {
-                                content: "Invalid or expired code.",
+                                content: "hi im k1dfun, and this didn't work, the code may be invalid or expired.",
                                 allowed_mentions: { parse: [] }
                             }
                         });
@@ -174,7 +174,7 @@ export default {
                     return Response.json({
                         type: 4,
                         data: {
-                            content: `Successfully linked your Discord to GRAB Tutorials account: **${entry.alias}**!`,
+                            content: `k1dfun says: you did it! welcome **${entry.alias}**!`,
                             allowed_mentions: { parse: [] }
                         }
                     });
@@ -182,7 +182,7 @@ export default {
                     return Response.json({
                         type: 4,
                         data: {
-                            content: "An error occurred while linking your account. Please try again.",
+                            content: "something happened idk what, no code for you. dearest k1dfun.",
                             allowed_mentions: { parse: [] }
                         }
                     });
@@ -196,7 +196,7 @@ export default {
                         return Response.json({
                             type: 4,
                             data: {
-                                content: "You aren't logged in.",
+                                content: "hi k1dfun here, i dont know who you are because your not logged in",
                                 allowed_mentions: { parse: [] }
                             }
                         });
@@ -210,7 +210,7 @@ export default {
                         return Response.json({
                             type: 4,
                             data: {
-                                content: "You aren't logged in.",
+                                content: "hi k1dfun here, i dont know who you are because your not logged in",
                                 allowed_mentions: { parse: [] }
                             }
                         });
@@ -220,7 +220,7 @@ export default {
                         return Response.json({
                             type: 4,
                             data: {
-                                content: `Your GRAB Tutorials account: **${data.alias}**`,
+                                content: `hi im k1dfun, this is your acccount here: **${data.alias}**`,
                                 allowed_mentions: { parse: [] }
                             }
                         });
@@ -228,7 +228,7 @@ export default {
                         return Response.json({
                             type: 4,
                             data: {
-                                content: "You aren't logged in.",
+                                content: "hi k1dfun here, i dont know who you are because your not logged in",
                                 allowed_mentions: { parse: [] }
                             }
                         });
@@ -237,7 +237,7 @@ export default {
                     return Response.json({
                         type: 4,
                         data: {
-                            content: "You aren't logged in.",
+                            content: "hi k1dfun here, i dont know who you are because your not logged in",
                             allowed_mentions: { parse: [] }
                         }
                     });
@@ -340,17 +340,17 @@ export default {
                                     }
                                 });
                             } else {
-                                replyContent = `Deck "${found.title}" found, but no card link available.`;
+                                replyContent = `Deck "${found.title}" there is a lot of code here, and i dont feel like saying anything for it says k1dfun `;
                             }
                         } else {
                             replyContent = `Deck "${found.title}" found, but no cards available.`;
                         }
                     }
                 } else {
-                    replyContent = "Failed to fetch decks data.";
+                    replyContent = "i failed again!";
                 }
             } catch (e) {
-                replyContent = "Error fetching decks data.";
+                replyContent = "i failed";
             }
 
             return Response.json({
