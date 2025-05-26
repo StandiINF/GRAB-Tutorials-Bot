@@ -1,7 +1,7 @@
 export const commands = [
   {
-    name: "deck",
-    description: "Get a deck's cards",
+    name: "hack",
+    description: "hi im k1dfun",
     dm_permission: true,
     options: [
       {
