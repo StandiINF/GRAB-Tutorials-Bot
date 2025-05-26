@@ -2,3 +2,6 @@ name = "workers-bot"
 main = "./worker.js"
 compatibility_date="2023-05-18"
 compatibility_flags = [ "nodejs_compat" ]
+kv_namespaces = [
+  { binding = "LINK_CODES", id = "7a870e135ee34675b8065a1a60815363" }
+]
