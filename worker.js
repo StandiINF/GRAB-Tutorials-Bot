@@ -32,15 +32,16 @@ export default {
 
             if (command_name === "deck") {
                 const deckNameInput = json.data.options?.find(opt => opt.name === "name")?.value || "";
-                const capitalizedDeckName = deckNameInput.charAt(0).toUpperCase() + deckNameInput.slice(1);
+                const deckNameLower = deckNameInput.toLowerCase();
 
                 const decksUrl = "https://assets.grab-tutorials.live/decks-png.json";
-                let replyContent = `Deck "${capitalizedDeckName}" not found.`;
+                let replyContent = `Deck "${deckNameInput}" not found.`;
                 try {
                     const decksRes = await fetch(decksUrl);
                     if (decksRes.ok) {
                         const decks = await decksRes.json();
-                        const found = decks.find(deck => deck.title === capitalizedDeckName);
+                        // Lowercase all titles for lookup
+                        const found = decks.find(deck => (deck.title || "").toLowerCase() === deckNameLower);
                         if (found) {
                             let color = undefined;
                             switch (found.category) {
@@ -105,14 +106,14 @@ export default {
                                                             type: 2,
                                                             style: 1,
                                                             label: "Back",
-                                                            custom_id: `deck_left_${capitalizedDeckName}_0`,
+                                                            custom_id: `deck_left_${deckNameLower}_0`,
                                                             disabled: true
                                                         },
                                                         {
                                                             type: 2,
                                                             style: 1,
                                                             label: "Next",
-                                                            custom_id: `deck_right_${capitalizedDeckName}_0`,
+                                                            custom_id: `deck_right_${deckNameLower}_0`,
                                                             disabled: cardKeys.length <= 1
                                                         }
                                                     ]
@@ -150,6 +151,7 @@ export default {
         if (json.type == 3 && json.data.custom_id?.startsWith("deck_")) {
 
             const [ , direction, deckName, indexStr ] = json.data.custom_id.split("_");
+            const deckNameLower = deckName.toLowerCase();
             const currentIndex = parseInt(indexStr, 10);
 
             const decksUrl = "https://assets.grab-tutorials.live/decks-png.json";
@@ -158,7 +160,8 @@ export default {
                 const decksRes = await fetch(decksUrl);
                 if (decksRes.ok) {
                     const decks = await decksRes.json();
-                    const found = decks.find(deck => deck.title === deckName);
+                    // Lowercase all titles for lookup
+                    const found = decks.find(deck => (deck.title || "").toLowerCase() === deckNameLower);
                     if (found) {
                         let color = undefined;
                         switch (found.category) {
@@ -224,14 +227,14 @@ export default {
                                                         type: 2,
                                                         style: 1,
                                                         label: "Back",
-                                                        custom_id: `deck_left_${deckName}_${newIndex}`,
+                                                        custom_id: `deck_left_${deckNameLower}_${newIndex}`,
                                                         disabled: newIndex === 0
                                                     },
                                                     {
                                                         type: 2,
                                                         style: 1,
                                                         label: "Next",
-                                                        custom_id: `deck_right_${deckName}_${newIndex}`,
+                                                        custom_id: `deck_right_${deckNameLower}_${newIndex}`,
                                                         disabled: newIndex === cardKeys.length - 1
                                                     }
                                                 ]
@@ -272,11 +275,11 @@ export default {
                 if (decksRes.ok) {
                     const decks = await decksRes.json();
                     const filtered = userInput
-                        ? decks.filter(deck => deck.title.toLowerCase().startsWith(userInput))
+                        ? decks.filter(deck => (deck.title || "").toLowerCase().startsWith(userInput))
                         : decks;
                     const choices = filtered.map(deck => ({
                         name: deck.title,
-                        value: deck.title
+                        value: (deck.title || "").toLowerCase()
                     })).slice(0, 25);
                     return Response.json({
                         type: 8,
