@@ -94,11 +94,8 @@ export default {
                                                         width: 300,
                                                         height: 154.91
                                                     },
-                                                    description: `*Card 1 of ${cardKeys.length}*`
-                                                },
-                                                ...(helpText ? [{
-                                                    description: helpText
-                                                }] : [])
+                                                    description: `*Card 1 of ${cardKeys.length}*${helpText ? `\n\n*${helpText}*` : ""}`
+                                                }
                                             ],
                                             components: [
                                                 {
@@ -216,11 +213,8 @@ export default {
                                                     width: 300,
                                                     height: 154.91
                                                 },
-                                                description: `*Card ${newIndex + 1} of ${cardKeys.length}*`
-                                            },
-                                            ...(helpText ? [{
-                                                description: helpText
-                                            }] : [])
+                                                description: `*Card ${newIndex + 1} of ${cardKeys.length}*${helpText ? `\n\n*${helpText}*` : ""}`
+                                            }
                                         ],
                                         components: [
                                             {
