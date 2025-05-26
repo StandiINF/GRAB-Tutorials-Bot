@@ -2,7 +2,6 @@ export const commands = [
   {
     name: "deck",
     description: "Get a deck's cards",
-    dm_permission: true,
     options: [
       {
         name: "name",
@@ -11,6 +10,8 @@ export const commands = [
         required: true,
         autocomplete: true
       }
-    ]
+    ],
+    integration_types: [0, 1],
+    contexts: [0, 1, 2]
   }
 ];
