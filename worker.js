@@ -38,93 +38,99 @@ export default {
                     const decksRes = await fetch(decksUrl);
                     if (decksRes.ok) {
                         const decks = await decksRes.json();
-                        const found = decks.find(deck => deck.title.toLowerCase() === deckNameInput.toLowerCase());
-                        if (found) {
-                            let color = undefined;
-                            switch (found.category) {
-                                case "basics":
-                                    color = 0x90CF90;
-                                    break;
-                                case "editor":
-                                    color = 0x7C4848;
-                                    break;
-                                case "animation":
-                                    color = 0x638DDD;
-                                    break;
-                                case "trigger":
-                                    color = 0xF89900;
-                                    break;
-                            }
-                            const cardKeys = found.cards ? Object.keys(found.cards) : [];
-                            if (cardKeys.length > 0) {
-                                const firstIndex = 0;
-                                const firstCard = found.cards[cardKeys[firstIndex]];
-                                const firstCardLink = firstCard?.link;
-                                let helpText = "";
-                                if (firstCard?.help) {
-                                    try {
-                                        const helpRes = await fetch("https://assets.grab-tutorials.live/help.json");
-                                        if (helpRes.ok) {
-                                            const helpArr = await helpRes.json();
-                                            const helpObj = Array.isArray(helpArr)
-                                                ? helpArr.find(h => h.id === firstCard.help)
-                                                : helpArr[firstCard.help] || (helpArr.find && helpArr.find(h => h.id === firstCard.help));
-                                            if (helpObj && helpObj.text) {
-                                                helpText = helpObj.text;
-                                            }
-                                        }
-                                    } catch (e) {
-                                        // 
-                                    }
+                        if (Array.isArray(decks)) {
+                            const found = decks.find(deck => deck.title && deck.title.toLowerCase() === deckNameInput.toLowerCase());
+                            if (found) {
+                                let color = undefined;
+                                switch (found.category) {
+                                    case "basics":
+                                        color = 0x90CF90;
+                                        break;
+                                    case "editor":
+                                        color = 0x7C4848;
+                                        break;
+                                    case "animation":
+                                        color = 0x638DDD;
+                                        break;
+                                    case "trigger":
+                                        color = 0xF89900;
+                                        break;
                                 }
-                                if (firstCardLink) {
-                                    return Response.json({
-                                        type: 4,
-                                        data: {
-                                            tts: false,
-                                            content: "",
-                                            embeds: [
-                                                {
-                                                    title: found.title,
-                                                    color,
-                                                    image: {
-                                                        url: `https://assets.grab-tutorials.live/${firstCardLink}`,
-                                                        width: 300,
-                                                        height: 154.91
-                                                    },
-                                                    description: `*Card 1 of ${cardKeys.length}*${helpText ? `\n\n*${helpText}*` : ""}`
+                                const cardKeys = found.cards ? Object.keys(found.cards) : [];
+                                if (cardKeys.length > 0) {
+                                    const firstIndex = 0;
+                                    const firstCard = found.cards[cardKeys[firstIndex]];
+                                    const firstCardLink = firstCard?.link;
+                                    let helpText = "";
+                                    if (firstCard?.help) {
+                                        try {
+                                            const helpRes = await fetch("https://assets.grab-tutorials.live/help.json");
+                                            if (helpRes.ok) {
+                                                const helpArr = await helpRes.json();
+                                                const helpObj = Array.isArray(helpArr)
+                                                    ? helpArr.find(h => h.id === firstCard.help)
+                                                    : helpArr[firstCard.help] || (helpArr.find && helpArr.find(h => h.id === firstCard.help));
+                                                if (helpObj && helpObj.text) {
+                                                    helpText = helpObj.text;
                                                 }
-                                            ],
-                                            components: [
-                                                {
-                                                    type: 1,
-                                                    components: [
-                                                        {
-                                                            type: 2,
-                                                            style: 1,
-                                                            label: "Back",
-                                                            custom_id: `deck_left_${capitalizedDeckName}_0`,
-                                                            disabled: true
-                                                        },
-                                                        {
-                                                            type: 2,
-                                                            style: 1,
-                                                            label: "Next",
-                                                            custom_id: `deck_right_${capitalizedDeckName}_0`,
-                                                            disabled: cardKeys.length <= 1
-                                                        }
-                                                    ]
-                                                }
-                                            ],
-                                            allowed_mentions: { parse: [] }
+                                            }
+                                        } catch (e) {
+                                            // 
                                         }
-                                    });
+                                    }
+                                    if (firstCardLink) {
+                                        return Response.json({
+                                            type: 4,
+                                            data: {
+                                                tts: false,
+                                                content: "",
+                                                embeds: [
+                                                    {
+                                                        title: found.title,
+                                                        color,
+                                                        image: {
+                                                            url: `https://assets.grab-tutorials.live/${firstCardLink}`,
+                                                            width: 300,
+                                                            height: 154.91
+                                                        },
+                                                        description: `*Card 1 of ${cardKeys.length}*${helpText ? `\n\n*${helpText}*` : ""}`
+                                                    }
+                                                ],
+                                                components: [
+                                                    {
+                                                        type: 1,
+                                                        components: [
+                                                            {
+                                                                type: 2,
+                                                                style: 1,
+                                                                label: "Back",
+                                                                custom_id: `deck_left_${capitalizedDeckName}_0`,
+                                                                disabled: true
+                                                            },
+                                                            {
+                                                                type: 2,
+                                                                style: 1,
+                                                                label: "Next",
+                                                                custom_id: `deck_right_${capitalizedDeckName}_0`,
+                                                                disabled: cardKeys.length <= 1
+                                                            }
+                                                        ]
+                                                    }
+                                                ],
+                                                allowed_mentions: { parse: [] }
+                                            }
+                                        });
+                                    } else {
+                                        replyContent = `Deck "${found.title}" found, but no card link available.`;
+                                    }
                                 } else {
-                                    replyContent = `Deck "${found.title}" found, but no card link available.`;
+                                    replyContent = `Deck "${found.title}" found, but no cards available.`;
                                 }
                             } else {
-                                replyContent = `Deck "${found.title}" found, but no cards available.`;
+                                replyContent = `Deck "${deckNameInput}" not found.`;
                             }
+                        } else {
+                            replyContent = "Decks data is not in expected format.";
                         }
                     } else {
                         replyContent = "Failed to fetch decks data.";
