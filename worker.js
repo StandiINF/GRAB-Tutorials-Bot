@@ -145,6 +145,62 @@ export default {
                     }
                 });
             }
+
+            // --- Add /link command handler here ---
+            if (command_name === "link") {
+                const code = json.data.options?.find(opt => opt.name === "code")?.value;
+                if (!code) {
+                    return Response.json({
+                        type: 4,
+                        data: {
+                            content: "You must provide a 6-digit code from https://grab-tutorials.live.",
+                            allowed_mentions: { parse: [] }
+                        }
+                    });
+                }
+                try {
+                    const res = await fetch('https://api.grab-tutorials.live/consumeLinkCode', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ code })
+                    });
+                    if (!res.ok) {
+                        return Response.json({
+                            type: 4,
+                            data: {
+                                content: "Invalid or expired code. Please generate a new one from https://grab-tutorials.live.",
+                                allowed_mentions: { parse: [] }
+                            }
+                        });
+                    }
+                    const data = await res.json();
+                    if (data.success) {
+                        return Response.json({
+                            type: 4,
+                            data: {
+                                content: `✅ Successfully linked your Discord to GRAB Tutorials account: **${data.alias}**!`,
+                                allowed_mentions: { parse: [] }
+                            }
+                        });
+                    } else {
+                        return Response.json({
+                            type: 4,
+                            data: {
+                                content: "Invalid or expired code. Please generate a new one from https://grab-tutorials.live.",
+                                allowed_mentions: { parse: [] }
+                            }
+                        });
+                    }
+                } catch (e) {
+                    return Response.json({
+                        type: 4,
+                        data: {
+                            content: "An error occurred while linking your account. Please try again.",
+                            allowed_mentions: { parse: [] }
+                        }
+                    });
+                }
+            }
         }
 
         if (json.type == 3 && json.data.custom_id?.startsWith("deck_")) {

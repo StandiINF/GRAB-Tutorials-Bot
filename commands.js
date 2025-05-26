@@ -13,5 +13,18 @@ export const commands = [
     ],
     integration_types: [0, 1],
     contexts: [0, 1, 2]
+  },
+
+  {
+    name: "link",
+    description: "Link your account to this bot",
+    options: [
+      {
+        name: "code",
+        description: "Code from the site",
+        type: 3,
+        required: true
+      }
+    ],
   }
 ];
