@@ -1,3 +1,4 @@
+# wrangler.toml
 name = "workers-bot"
 main = "./worker.js"
 compatibility_date="2023-05-18"
@@ -9,3 +10,6 @@ kv_namespaces = [
 binding = "DB"
 database_name = "aliases-db"
 database_id = "b51d611c-a31a-49e9-ae8a-a231618513e5"
+
+[triggers]
+routes = ["https://api.grab-tutorials.live/get-alias*"]
