@@ -154,12 +154,21 @@ export default {
                         };
                     }
 
+                    if (!env.DISCORD_APPLICATION_ID) {
+                        console.error("DISCORD_APPLICATION_ID is not set in environment variables.");
+                        return;
+                    }
+
                     const webhookUrl = `https://discord.com/api/v10/webhooks/${env.DISCORD_APPLICATION_ID}/${json.token}/messages/@original`;
-                    await fetch(webhookUrl, {
+                    const resp = await fetch(webhookUrl, {
                         method: "PATCH",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(followupData)
                     });
+                    if (!resp.ok) {
+                        const errText = await resp.text();
+                        console.error("Failed to PATCH Discord webhook:", resp.status, errText);
+                    }
                 })());
 
                 return Response.json({ type: 5 });
