@@ -76,7 +76,7 @@ export default {
                                             }
                                         }
                                     } catch (e) {
-                                        // ignore help fetch errors
+                                        // 
                                     }
                                 }
                                 if (firstCardLink) {
@@ -196,7 +196,7 @@ export default {
                                         }
                                     }
                                 } catch (e) {
-                                    // ignore help fetch errors
+                                    // 
                                 }
                             }
                             if (cardLink) {
@@ -265,16 +265,19 @@ export default {
             });
         }
 
-        // Handle autocomplete interaction
         if (json.type === 4 && json.data?.name === "deck" && json.data?.options?.[0]?.name === "name") {
             try {
+                const userInput = json.data.options[0].value?.toLowerCase() || "";
                 const decksRes = await fetch("https://assets.grab-tutorials.live/decks-png.json");
                 if (decksRes.ok) {
                     const decks = await decksRes.json();
-                    const choices = decks.map(deck => ({
+                    const filtered = userInput
+                        ? decks.filter(deck => deck.title.toLowerCase().startsWith(userInput))
+                        : decks;
+                    const choices = filtered.map(deck => ({
                         name: deck.title,
                         value: deck.title
-                    })).slice(0, 25); // Discord allows max 25 choices
+                    })).slice(0, 25);
                     return Response.json({
                         type: 8,
                         data: {
@@ -283,7 +286,7 @@ export default {
                     });
                 }
             } catch (e) {
-                // ignore errors, fall through
+                // 
             }
             return Response.json({
                 type: 8,

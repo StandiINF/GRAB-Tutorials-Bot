@@ -9,7 +9,7 @@ export const commands = [
         description: "The name of the deck",
         type: 3,
         required: true,
-        autocomplete: true // Enable autocomplete for this option
+        autocomplete: true
       }
     ]
   }
