@@ -26,5 +26,11 @@ export const commands = [
         required: true
       }
     ],
+  },
+
+  {
+    name: "account",
+    description: "Show the GRAB Tutorials account linked to your Discord account",
+    options: [],
   }
 ];

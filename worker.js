@@ -146,14 +146,13 @@ export default {
                 });
             }
 
-            // --- Add /link command handler here ---
             if (command_name === "link") {
                 const code = json.data.options?.find(opt => opt.name === "code")?.value;
                 if (!code) {
                     return Response.json({
                         type: 4,
                         data: {
-                            content: "You must provide a 6-digit code from https://grab-tutorials.live.",
+                            content: "You must provide a 6-digit code.",
                             allowed_mentions: { parse: [] }
                         }
                     });
@@ -165,7 +164,7 @@ export default {
                         return Response.json({
                             type: 4,
                             data: {
-                                content: "Invalid or expired code. Please generate a new one from https://grab-tutorials.live.",
+                                content: "Invalid or expired code.",
                                 allowed_mentions: { parse: [] }
                             }
                         });
@@ -184,6 +183,61 @@ export default {
                         type: 4,
                         data: {
                             content: "An error occurred while linking your account. Please try again.",
+                            allowed_mentions: { parse: [] }
+                        }
+                    });
+                }
+            }
+
+            if (command_name === "account") {
+                try {
+                    const discordId = json.member?.user?.id || json.user?.id;
+                    if (!discordId) {
+                        return Response.json({
+                            type: 4,
+                            data: {
+                                content: "You aren't logged in.",
+                                allowed_mentions: { parse: [] }
+                            }
+                        });
+                    }
+                    const res = await fetch('https://api.grab-tutorials.live/accountInfo', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ discordId })
+                    });
+                    if (!res.ok) {
+                        return Response.json({
+                            type: 4,
+                            data: {
+                                content: "You aren't logged in.",
+                                allowed_mentions: { parse: [] }
+                            }
+                        });
+                    }
+                    const data = await res.json();
+                    if (data.success && data.alias) {
+                        return Response.json({
+                            type: 4,
+                            data: {
+                                content: `Your GRAB Tutorials account: **${data.alias}**`,
+                                allowed_mentions: { parse: [] }
+                            }
+                        });
+                    } else {
+                        return Response.json({
+                            type: 4,
+                            data: {
+                                content: "You aren't logged in.",
+                                allowed_mentions: { parse: [] }
+                            }
+                        });
+                    }
+                } catch (e) {
+                    return Response.json({
+                        type: 4,
+                        data: {
+                            content: "You aren't logged in.",
                             allowed_mentions: { parse: [] }
                         }
                     });
