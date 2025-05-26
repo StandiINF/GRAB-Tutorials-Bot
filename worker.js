@@ -257,7 +257,7 @@ export default {
                             }
                         });
                     }
-                    // Query SQL for alias linked to this discordId
+
                     let row;
                     try {
                         row = await env.DB.prepare(
@@ -296,6 +296,75 @@ export default {
                         type: 4,
                         data: {
                             content: "You aren't logged in.",
+                            allowed_mentions: { parse: [] }
+                        }
+                    });
+                }
+            }
+
+            if (command_name === "unlink") {
+                try {
+                    const discordId = json.member?.user?.id || json.user?.id;
+                    if (!discordId) {
+                        return Response.json({
+                            type: 4,
+                            data: {
+                                content: "Could not determine your Discord ID.",
+                                allowed_mentions: { parse: [] }
+                            }
+                        });
+                    }
+                    let row;
+                    try {
+                        row = await env.DB.prepare(
+                            "SELECT alias FROM links WHERE discord_id = ? LIMIT 1"
+                        ).bind(discordId).first();
+                    } catch (sqlErr) {
+                        console.error("SQL error in /unlink (select):", sqlErr);
+                        return Response.json({
+                            type: 4,
+                            data: {
+                                content: "Database error: " + sqlErr.message,
+                                allowed_mentions: { parse: [] }
+                            }
+                        });
+                    }
+                    if (!row || !row.alias) {
+                        return Response.json({
+                            type: 4,
+                            data: {
+                                content: "No linked account found for your Discord.",
+                                allowed_mentions: { parse: [] }
+                            }
+                        });
+                    }
+                    try {
+                        await env.DB.prepare(
+                            "DELETE FROM links WHERE discord_id = ?"
+                        ).bind(discordId).run();
+                    } catch (sqlDelErr) {
+                        console.error("SQL error in /unlink (delete):", sqlDelErr);
+                        return Response.json({
+                            type: 4,
+                            data: {
+                                content: "Database error during unlink: " + sqlDelErr.message,
+                                allowed_mentions: { parse: [] }
+                            }
+                        });
+                    }
+                    return Response.json({
+                        type: 4,
+                        data: {
+                            content: `Unlinked your Discord from GRAB Tutorials account: **${row.alias}**.`,
+                            allowed_mentions: { parse: [] }
+                        }
+                    });
+                } catch (e) {
+                    console.error("Unexpected error in /unlink:", e);
+                    return Response.json({
+                        type: 4,
+                        data: {
+                            content: "An error occurred while unlinking your account. Please try again.",
                             allowed_mentions: { parse: [] }
                         }
                     });

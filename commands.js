@@ -17,7 +17,7 @@ export const commands = [
 
   {
     name: "link",
-    description: "Link your account to this bot",
+    description: "Link your site account to this bot",
     options: [
       {
         name: "code",
@@ -31,6 +31,12 @@ export const commands = [
   {
     name: "account",
     description: "Show the GRAB Tutorials account linked to your Discord account",
+    options: [],
+  },
+
+  {
+    name: "unlink",
+    description: "Unlink your Discord account from the site",
     options: [],
   }
 ];
