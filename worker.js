@@ -32,15 +32,13 @@ export default {
 
             if (command_name === "deck") {
                 const deckNameInput = json.data.options?.find(opt => opt.name === "name")?.value || "";
-                const capitalizedDeckName = deckNameInput.charAt(0).toUpperCase() + deckNameInput.slice(1);
-
                 const decksUrl = "https://assets.grab-tutorials.live/decks-png.json";
-                let replyContent = `Deck "${capitalizedDeckName}" not found.`;
+                let replyContent = `Deck "${deckNameInput}" not found.`;
                 try {
                     const decksRes = await fetch(decksUrl);
                     if (decksRes.ok) {
                         const decks = await decksRes.json();
-                        const found = decks.find(deck => deck.title === capitalizedDeckName);
+                        const found = decks.find(deck => deck.title.toLowerCase() === deckNameInput.toLowerCase());
                         if (found) {
                             let color = undefined;
                             switch (found.category) {
