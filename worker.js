@@ -295,6 +295,21 @@ export default {
 
                         await env.LINK_CODES.delete(code);
 
+                        try {
+                            const sessionRow = await env.DB.prepare(
+                                "SELECT session_id FROM sessions WHERE alias = ? LIMIT 1"
+                            ).bind(alias).first();
+                            if (sessionRow && sessionRow.session_id) {
+                                await fetch("https://api.grab-tutorials.live/discord-link-status", {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ sessionId: sessionRow.session_id })
+                                });
+                            }
+                        } catch (e) {
+                            // 
+                        }
+
                         return Response.json({
                             type: 4,
                             data: {
