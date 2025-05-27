@@ -300,6 +300,17 @@ export default {
                                 "SELECT session_id FROM sessions WHERE alias = ? LIMIT 1"
                             ).bind(alias).first();
                             if (sessionRow && sessionRow.session_id) {
+                                try {
+                                    const ws = new (require('ws'))("wss://api.grab-tutorials.live/ws");
+                                    ws.on('open', () => {
+                                        ws.send(JSON.stringify({
+                                            sessionId: sessionRow.session_id,
+                                            loggedIn: true
+                                        }));
+                                        ws.close();
+                                    });
+                                } catch (wsErr) {
+                                }
                                 await fetch("https://api.grab-tutorials.live/discord-link-status", {
                                     method: "POST",
                                     headers: { "Content-Type": "application/json" },
