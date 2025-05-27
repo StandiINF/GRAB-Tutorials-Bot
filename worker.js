@@ -156,7 +156,7 @@ export default {
                         return Response.json({
                             type: 4,
                             data: {
-                                content: "This command can only be used in the Standi Discord server.",
+                                content: "This command cannot be used here.\n\nPlease use it in the Standi Discord server.",
                                 allowed_mentions: { parse: [] }
                             }
                         });
@@ -194,7 +194,7 @@ export default {
                             return Response.json({
                                 type: 4,
                                 data: {
-                                    content: `Your GRAB Tutorials account: **${row.alias}**`,
+                                    content: `Your linked account: **${row.alias}**`,
                                     allowed_mentions: { parse: [] }
                                 }
                             });
@@ -298,7 +298,7 @@ export default {
                         return Response.json({
                             type: 4,
                             data: {
-                                content: `Successfully linked your Discord to GRAB Tutorials account: **${alias}**!`,
+                                content: `Successfully linked: **${alias}**!`,
                                 allowed_mentions: { parse: [] }
                             }
                         });
@@ -343,7 +343,7 @@ export default {
                             return Response.json({
                                 type: 4,
                                 data: {
-                                    content: "No linked account found for your Discord.",
+                                    content: "No link found for your Discord.",
                                     allowed_mentions: { parse: [] }
                                 }
                             });
@@ -365,7 +365,7 @@ export default {
                         return Response.json({
                             type: 4,
                             data: {
-                                content: `Unlinked your Discord from GRAB Tutorials account: **${row.alias}**.`,
+                                content: `Unlinked account: **${row.alias}**.`,
                                 allowed_mentions: { parse: [] }
                             }
                         });
