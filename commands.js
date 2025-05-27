@@ -44,6 +44,8 @@ export const commands = [
         description: "Unlink your Discord account from the site",
         options: []
       }
-    ]
+    ],
+    integration_types: [0, 1],
+    contexts: [0, 1, 2]
   }
 ];
