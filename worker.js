@@ -303,6 +303,7 @@ export default {
                                 try {
                                     const ws = new (require('ws'))("wss://api.grab-tutorials.live/ws");
                                     ws.on('open', () => {
+                                        // Always send a string
                                         ws.send(JSON.stringify({
                                             sessionId: sessionRow.session_id,
                                             loggedIn: true
