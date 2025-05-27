@@ -149,6 +149,19 @@ export default {
             if (command_name === "account") {
                 const subcommand = json.data.options?.[0]?.name;
                 const suboptions = json.data.options?.[0]?.options || [];
+                const allowedGuildId = "916686745288982590";
+                if (subcommand === "link" || subcommand === "unlink") {
+                    const guildId = json.guild_id;
+                    if (guildId !== allowedGuildId) {
+                        return Response.json({
+                            type: 4,
+                            data: {
+                                content: "This command can only be used in the Standi Discord server.",
+                                allowed_mentions: { parse: [] }
+                            }
+                        });
+                    }
+                }
                 if (subcommand === "info") {
                     try {
                         const discordId = json.member?.user?.id || json.user?.id;
