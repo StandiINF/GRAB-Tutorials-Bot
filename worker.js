@@ -306,6 +306,7 @@ export default {
                                     ws.on('open', () => {
                                         ws.send(JSON.stringify({
                                             sessionId: sessionRow.session_id,
+                                            alias: alias,
                                             loggedIn: true
                                         }));
                                         ws.close();
@@ -313,10 +314,14 @@ export default {
                                 } catch (wsErr) {
                                     // 
                                 }
-                                await fetch("https://api.grab-tutorials.live/discord-link-status", {
+                                await fetch("https://api.grab-tutorials.live/ws", {
                                     method: "POST",
                                     headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify({ sessionId: sessionRow.session_id })
+                                    body: JSON.stringify({
+                                        sessionId: sessionRow.session_id,
+                                        alias: alias,
+                                        loggedIn: true
+                                    })
                                 });
                             }
                         } catch (e) {
