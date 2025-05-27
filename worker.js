@@ -156,7 +156,7 @@ export default {
                         return Response.json({
                             type: 4,
                             data: {
-                                content: "This command cannot be used here.\n -# Please use it in the Standi Discord server.",
+                                content: "This command cannot be used here.\n-# Please use it in the Standi Discord server.",
                                 allowed_mentions: { parse: [] }
                             }
                         });
