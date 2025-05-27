@@ -301,9 +301,9 @@ export default {
                             ).bind(alias).first();
                             if (sessionRow && sessionRow.session_id) {
                                 try {
-                                    const ws = new (require('ws'))("wss://api.grab-tutorials.live/ws");
+                                    const WebSocket = require('ws');
+                                    const ws = new WebSocket("wss://api.grab-tutorials.live/ws");
                                     ws.on('open', () => {
-                                        // Always send a string
                                         ws.send(JSON.stringify({
                                             sessionId: sessionRow.session_id,
                                             loggedIn: true
@@ -311,6 +311,7 @@ export default {
                                         ws.close();
                                     });
                                 } catch (wsErr) {
+                                    // 
                                 }
                                 await fetch("https://api.grab-tutorials.live/discord-link-status", {
                                     method: "POST",
