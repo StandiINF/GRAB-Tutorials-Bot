@@ -146,109 +146,56 @@ export default {
                 });
             }
 
-            if (command_name === "link") {
-                const code = json.data.options?.find(opt => opt.name === "code")?.value;
-                if (!code) {
-                    return Response.json({
-                        type: 4,
-                        data: {
-                            content: "You must provide a 6-digit code.",
-                            allowed_mentions: { parse: [] }
-                        }
-                    });
-                }
-                try {
-                    // Directly check the KV store for the code
-                    const value = await env.LINK_CODES.get(code);
-                    if (!value) {
-                        return Response.json({
-                            type: 4,
-                            data: {
-                                content: "Invalid or expired code.",
-                                allowed_mentions: { parse: [] }
-                            }
-                        });
-                    }
-                    const entry = JSON.parse(value);
-                    const alias = entry.alias;
-                    const discordId = json.member?.user?.id || json.user?.id;
-                    if (!alias || !discordId) {
-                        return Response.json({
-                            type: 4,
-                            data: {
-                                content: "Could not determine alias or Discord ID.",
-                                allowed_mentions: { parse: [] }
-                            }
-                        });
-                    }
-
-                    // Check if already linked in SQL
-                    let checkRes;
-                    try {
-                        checkRes = await env.DB.prepare(
-                            "SELECT 1 FROM links WHERE alias = ? OR discord_id = ? LIMIT 1"
-                        ).bind(alias, discordId).first();
-                    } catch (sqlCheckErr) {
-                        console.error("SQL check error:", sqlCheckErr);
-                        return Response.json({
-                            type: 4,
-                            data: {
-                                content: "Database error during check: " + sqlCheckErr.message,
-                                allowed_mentions: { parse: [] }
-                            }
-                        });
-                    }
-                    if (checkRes) {
-                        await env.LINK_CODES.delete(code);
-                        return Response.json({
-                            type: 4,
-                            data: {
-                                content: "This account is already linked.",
-                                allowed_mentions: { parse: [] }
-                            }
-                        });
-                    }
-
-                    try {
-                        await env.DB.prepare(
-                            "INSERT INTO links (alias, discord_id) VALUES (?, ?)"
-                        ).bind(alias, discordId).run();
-                    } catch (sqlInsertErr) {
-                        console.error("SQL insert error:", sqlInsertErr);
-                        return Response.json({
-                            type: 4,
-                            data: {
-                                content: "Database error during insert: " + sqlInsertErr.message,
-                                allowed_mentions: { parse: [] }
-                            }
-                        });
-                    }
-
-                    await env.LINK_CODES.delete(code);
-
-                    return Response.json({
-                        type: 4,
-                        data: {
-                            content: `Successfully linked your Discord to GRAB Tutorials account: **${alias}**!`,
-                            allowed_mentions: { parse: [] }
-                        }
-                    });
-                } catch (e) {
-                    console.error("Unexpected error in /link:", e);
-                    return Response.json({
-                        type: 4,
-                        data: {
-                            content: "An error occurred while linking your account. Please try again.",
-                            allowed_mentions: { parse: [] }
-                        }
-                    });
-                }
-            }
-
             if (command_name === "account") {
-                try {
-                    const discordId = json.member?.user?.id || json.user?.id;
-                    if (!discordId) {
+                const subcommand = json.data.options?.[0]?.name;
+                const suboptions = json.data.options?.[0]?.options || [];
+                if (subcommand === "info") {
+                    try {
+                        const discordId = json.member?.user?.id || json.user?.id;
+                        if (!discordId) {
+                            return Response.json({
+                                type: 4,
+                                data: {
+                                    content: "You aren't logged in.",
+                                    allowed_mentions: { parse: [] }
+                                }
+                            });
+                        }
+
+                        let row;
+                        try {
+                            row = await env.DB.prepare(
+                                "SELECT alias FROM links WHERE discord_id = ? LIMIT 1"
+                            ).bind(discordId).first();
+                        } catch (sqlErr) {
+                            console.error("SQL error in /account info:", sqlErr);
+                            return Response.json({
+                                type: 4,
+                                data: {
+                                    content: "Database error: " + sqlErr.message,
+                                    allowed_mentions: { parse: [] }
+                                }
+                            });
+                        }
+                        if (row && row.alias) {
+                            return Response.json({
+                                type: 4,
+                                data: {
+                                    content: `Your GRAB Tutorials account: **${row.alias}**`,
+                                    allowed_mentions: { parse: [] }
+                                }
+                            });
+                        } else {
+                            return Response.json({
+                                type: 4,
+                                data: {
+                                    content: "You aren't logged in.",
+                                    allowed_mentions: { parse: [] }
+                                }
+                            });
+                        }
+                    } catch (e) {
+                        console.error("Unexpected error in /account info:", e);
                         return Response.json({
                             type: 4,
                             data: {
@@ -257,117 +204,168 @@ export default {
                             }
                         });
                     }
+                } else if (subcommand === "link") {
+                    const code = suboptions.find(opt => opt.name === "code")?.value;
+                    if (!code) {
+                        return Response.json({
+                            type: 4,
+                            data: {
+                                content: "You must provide a 6-digit code.",
+                                allowed_mentions: { parse: [] }
+                            }
+                        });
+                    }
+                    try {
+                        const value = await env.LINK_CODES.get(code);
+                        if (!value) {
+                            return Response.json({
+                                type: 4,
+                                data: {
+                                    content: "Invalid or expired code.",
+                                    allowed_mentions: { parse: [] }
+                                }
+                            });
+                        }
+                        const entry = JSON.parse(value);
+                        const alias = entry.alias;
+                        const discordId = json.member?.user?.id || json.user?.id;
+                        if (!alias || !discordId) {
+                            return Response.json({
+                                type: 4,
+                                data: {
+                                    content: "Could not determine alias or Discord ID.",
+                                    allowed_mentions: { parse: [] }
+                                }
+                            });
+                        }
 
-                    let row;
-                    try {
-                        row = await env.DB.prepare(
-                            "SELECT alias FROM links WHERE discord_id = ? LIMIT 1"
-                        ).bind(discordId).first();
-                    } catch (sqlErr) {
-                        console.error("SQL error in /account:", sqlErr);
-                        return Response.json({
-                            type: 4,
-                            data: {
-                                content: "Database error: " + sqlErr.message,
-                                allowed_mentions: { parse: [] }
-                            }
-                        });
-                    }
-                    if (row && row.alias) {
-                        return Response.json({
-                            type: 4,
-                            data: {
-                                content: `Your GRAB Tutorials account: **${row.alias}**`,
-                                allowed_mentions: { parse: [] }
-                            }
-                        });
-                    } else {
-                        return Response.json({
-                            type: 4,
-                            data: {
-                                content: "You aren't logged in.",
-                                allowed_mentions: { parse: [] }
-                            }
-                        });
-                    }
-                } catch (e) {
-                    console.error("Unexpected error in /account:", e);
-                    return Response.json({
-                        type: 4,
-                        data: {
-                            content: "You aren't logged in.",
-                            allowed_mentions: { parse: [] }
+                        let checkRes;
+                        try {
+                            checkRes = await env.DB.prepare(
+                                "SELECT 1 FROM links WHERE alias = ? OR discord_id = ? LIMIT 1"
+                            ).bind(alias, discordId).first();
+                        } catch (sqlCheckErr) {
+                            console.error("SQL check error:", sqlCheckErr);
+                            return Response.json({
+                                type: 4,
+                                data: {
+                                    content: "Database error during check: " + sqlCheckErr.message,
+                                    allowed_mentions: { parse: [] }
+                                }
+                            });
                         }
-                    });
-                }
-            }
+                        if (checkRes) {
+                            await env.LINK_CODES.delete(code);
+                            return Response.json({
+                                type: 4,
+                                data: {
+                                    content: "This account is already linked.",
+                                    allowed_mentions: { parse: [] }
+                                }
+                            });
+                        }
 
-            if (command_name === "unlink") {
-                try {
-                    const discordId = json.member?.user?.id || json.user?.id;
-                    if (!discordId) {
-                        return Response.json({
-                            type: 4,
-                            data: {
-                                content: "Could not determine your Discord ID.",
-                                allowed_mentions: { parse: [] }
-                            }
-                        });
-                    }
-                    let row;
-                    try {
-                        row = await env.DB.prepare(
-                            "SELECT alias FROM links WHERE discord_id = ? LIMIT 1"
-                        ).bind(discordId).first();
-                    } catch (sqlErr) {
-                        console.error("SQL error in /unlink (select):", sqlErr);
-                        return Response.json({
-                            type: 4,
-                            data: {
-                                content: "Database error: " + sqlErr.message,
-                                allowed_mentions: { parse: [] }
-                            }
-                        });
-                    }
-                    if (!row || !row.alias) {
-                        return Response.json({
-                            type: 4,
-                            data: {
-                                content: "No linked account found for your Discord.",
-                                allowed_mentions: { parse: [] }
-                            }
-                        });
-                    }
-                    try {
-                        await env.DB.prepare(
-                            "DELETE FROM links WHERE discord_id = ?"
-                        ).bind(discordId).run();
-                    } catch (sqlDelErr) {
-                        console.error("SQL error in /unlink (delete):", sqlDelErr);
-                        return Response.json({
-                            type: 4,
-                            data: {
-                                content: "Database error during unlink: " + sqlDelErr.message,
-                                allowed_mentions: { parse: [] }
-                            }
-                        });
-                    }
-                    return Response.json({
-                        type: 4,
-                        data: {
-                            content: `Unlinked your Discord from GRAB Tutorials account: **${row.alias}**.`,
-                            allowed_mentions: { parse: [] }
+                        try {
+                            await env.DB.prepare(
+                                "INSERT INTO links (alias, discord_id) VALUES (?, ?)"
+                            ).bind(alias, discordId).run();
+                        } catch (sqlInsertErr) {
+                            console.error("SQL insert error:", sqlInsertErr);
+                            return Response.json({
+                                type: 4,
+                                data: {
+                                    content: "Database error during insert: " + sqlInsertErr.message,
+                                    allowed_mentions: { parse: [] }
+                                }
+                            });
                         }
-                    });
-                } catch (e) {
-                    console.error("Unexpected error in /unlink:", e);
-                    return Response.json({
-                        type: 4,
-                        data: {
-                            content: "An error occurred while unlinking your account. Please try again.",
-                            allowed_mentions: { parse: [] }
+
+                        await env.LINK_CODES.delete(code);
+
+                        return Response.json({
+                            type: 4,
+                            data: {
+                                content: `Successfully linked your Discord to GRAB Tutorials account: **${alias}**!`,
+                                allowed_mentions: { parse: [] }
+                            }
+                        });
+                    } catch (e) {
+                        console.error("Unexpected error in /account link:", e);
+                        return Response.json({
+                            type: 4,
+                            data: {
+                                content: "An error occurred while linking your account. Please try again.",
+                                allowed_mentions: { parse: [] }
+                            }
+                        });
+                    }
+                } else if (subcommand === "unlink") {
+                    try {
+                        const discordId = json.member?.user?.id || json.user?.id;
+                        if (!discordId) {
+                            return Response.json({
+                                type: 4,
+                                data: {
+                                    content: "Could not determine your Discord ID.",
+                                    allowed_mentions: { parse: [] }
+                                }
+                            });
                         }
-                    });
+                        let row;
+                        try {
+                            row = await env.DB.prepare(
+                                "SELECT alias FROM links WHERE discord_id = ? LIMIT 1"
+                            ).bind(discordId).first();
+                        } catch (sqlErr) {
+                            console.error("SQL error in /account unlink (select):", sqlErr);
+                            return Response.json({
+                                type: 4,
+                                data: {
+                                    content: "Database error: " + sqlErr.message,
+                                    allowed_mentions: { parse: [] }
+                                }
+                            });
+                        }
+                        if (!row || !row.alias) {
+                            return Response.json({
+                                type: 4,
+                                data: {
+                                    content: "No linked account found for your Discord.",
+                                    allowed_mentions: { parse: [] }
+                                }
+                            });
+                        }
+                        try {
+                            await env.DB.prepare(
+                                "DELETE FROM links WHERE discord_id = ?"
+                            ).bind(discordId).run();
+                        } catch (sqlDelErr) {
+                            console.error("SQL error in /account unlink (delete):", sqlDelErr);
+                            return Response.json({
+                                type: 4,
+                                data: {
+                                    content: "Database error during unlink: " + sqlDelErr.message,
+                                    allowed_mentions: { parse: [] }
+                                }
+                            });
+                        }
+                        return Response.json({
+                            type: 4,
+                            data: {
+                                content: `Unlinked your Discord from GRAB Tutorials account: **${row.alias}**.`,
+                                allowed_mentions: { parse: [] }
+                            }
+                        });
+                    } catch (e) {
+                        console.error("Unexpected error in /account unlink:", e);
+                        return Response.json({
+                            type: 4,
+                            data: {
+                                content: "An error occurred while unlinking your account. Please try again.",
+                                allowed_mentions: { parse: [] }
+                            }
+                        });
+                    }
                 }
             }
         }

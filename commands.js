@@ -16,27 +16,34 @@ export const commands = [
   },
 
   {
-    name: "link",
-    description: "Link your site account to this bot",
+    name: "account",
+    description: "Account management for GRAB Tutorials",
     options: [
       {
-        name: "code",
-        description: "Code from the site",
-        type: 3,
-        required: true
+        type: 1,
+        name: "info",
+        description: "Show the GRAB Tutorials account linked to your Discord account",
+        options: []
+      },
+      {
+        type: 1,
+        name: "link",
+        description: "Link your site account to this bot",
+        options: [
+          {
+            name: "code",
+            description: "Code from the site",
+            type: 3,
+            required: true
+          }
+        ]
+      },
+      {
+        type: 1,
+        name: "unlink",
+        description: "Unlink your Discord account from the site",
+        options: []
       }
-    ],
-  },
-
-  {
-    name: "account",
-    description: "Show the GRAB Tutorials account linked to your Discord account",
-    options: [],
-  },
-
-  {
-    name: "unlink",
-    description: "Unlink your Discord account from the site",
-    options: [],
+    ]
   }
 ];
