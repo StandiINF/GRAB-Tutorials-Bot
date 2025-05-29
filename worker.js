@@ -35,7 +35,7 @@ export default {
                 decksArr = await decksRes.json();
                 decks = Array.isArray(decksArr) ? decksArr.filter(d => d.title) : [];
                 helpArr = Array.isArray(decksArr)
-                    ? decksArr.filter(obj => typeof obj.id === "string" && typeof obj.text === "string")
+                    ? decksArr.filter(obj => typeof obj.id === "string" && "text" in obj)
                     : [];
             }
             return { decks, helpArr };
