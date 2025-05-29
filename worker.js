@@ -65,7 +65,7 @@ export default {
                                 let helpText = "";
                                 if (firstCard?.help) {
                                     try {
-                                        const helpRes = await fetch("https://assets.grab-tutorials.live/help.json");
+                                        const helpRes = await fetch("https://assets.grab-tutorials.live/decks.json");
                                         if (helpRes.ok) {
                                             const helpArr = await helpRes.json();
                                             const helpObj = Array.isArray(helpArr)
