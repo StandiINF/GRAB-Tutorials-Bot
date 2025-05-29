@@ -39,7 +39,13 @@ export default {
                 try {
                     const decksRes = await fetch(decksUrl);
                     if (decksRes.ok) {
-                        const decks = await decksRes.json();
+                        const decksArr = await decksRes.json();
+                        const decks = Array.isArray(decksArr)
+                            ? decksArr.filter(d => d.title)
+                            : [];
+                        const helpArr = Array.isArray(decksArr)
+                            ? decksArr.filter(d => d.id && d.text)
+                            : [];
                         const found = decks.find(deck => (deck.title || "").toLowerCase() === deckNameLower);
                         if (found) {
                             let color = undefined;
@@ -64,19 +70,9 @@ export default {
                                 const firstCardLink = firstCard?.link;
                                 let helpText = "";
                                 if (firstCard?.help) {
-                                    try {
-                                        const helpRes = await fetch("https://assets.grab-tutorials.live/decks.json");
-                                        if (helpRes.ok) {
-                                            const helpArr = await helpRes.json();
-                                            const helpObj = Array.isArray(helpArr)
-                                                ? helpArr.find(h => h.id === firstCard.help)
-                                                : helpArr[firstCard.help] || (helpArr.find && helpArr.find(h => h.id === firstCard.help));
-                                            if (helpObj && helpObj.text) {
-                                                helpText = helpObj.text;
-                                            }
-                                        }
-                                    } catch (e) {
-                                        // 
+                                    const helpObj = helpArr.find(h => h.id === firstCard.help);
+                                    if (helpObj && helpObj.text) {
+                                        helpText = helpObj.text;
                                     }
                                 }
                                 if (firstCardLink) {
