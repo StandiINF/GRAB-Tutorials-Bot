@@ -74,12 +74,11 @@ export default {
                             const firstIndex = 0;
                             const firstCard = found.cards[cardKeys[firstIndex]];
                             const firstCardLink = firstCard?.link;
+                            let helpId = typeof firstCard?.help === "string" && firstCard.help ? firstCard.help : "helpOne";
                             let helpText = "";
-                            if (firstCard?.help) {
-                                const helpObj = helpArr.find(h => String(h.id) === String(firstCard.help));
-                                if (helpObj && helpObj.text) {
-                                    helpText = helpObj.text;
-                                }
+                            const helpObj = helpArr.find(h => String(h.id) === helpId);
+                            if (helpObj && helpObj.text) {
+                                helpText = helpObj.text;
                             }
                             if (firstCardLink) {
                                 return Response.json({
@@ -414,12 +413,11 @@ export default {
                         if (newIndex >= cardKeys.length) newIndex = 0;
                         const card = found.cards[cardKeys[newIndex]];
                         const cardLink = card?.link;
+                        let helpId = typeof card?.help === "string" && card.help ? card.help : "helpOne";
                         let helpText = "";
-                        if (card?.help) {
-                            const helpObj = helpArr.find(h => String(h.id) === String(card.help));
-                            if (helpObj && helpObj.text) {
-                                helpText = helpObj.text;
-                            }
+                        const helpObj = helpArr.find(h => String(h.id) === helpId);
+                        if (helpObj && helpObj.text) {
+                            helpText = helpObj.text;
                         }
                         if (cardLink) {
                             return Response.json({
