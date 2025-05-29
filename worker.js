@@ -34,7 +34,7 @@ export default {
                 const deckNameInput = json.data.options?.find(opt => opt.name === "name")?.value || "";
                 const deckNameLower = deckNameInput.toLowerCase();
 
-                const decksUrl = "https://assets.grab-tutorials.live/decks-png.json";
+                const decksUrl = "https://assets.grab-tutorials.live/decks.json";
                 let replyContent = `Deck "${deckNameInput}" not found.`;
                 try {
                     const decksRes = await fetch(decksUrl);
@@ -389,7 +389,7 @@ export default {
             const deckNameLower = deckName.toLowerCase();
             const currentIndex = parseInt(indexStr, 10);
 
-            const decksUrl = "https://assets.grab-tutorials.live/decks-png.json";
+            const decksUrl = "https://assets.grab-tutorials.live/decks.json";
             let replyContent = `Deck "${deckName}" not found.`;
             try {
                 const decksRes = await fetch(decksUrl);
@@ -505,7 +505,7 @@ export default {
         if (json.type === 4 && json.data?.name === "deck" && json.data?.options?.[0]?.name === "name") {
             try {
                 const userInput = json.data.options[0].value?.toLowerCase() || "";
-                const decksRes = await fetch("https://assets.grab-tutorials.live/decks-png.json");
+                const decksRes = await fetch("https://assets.grab-tutorials.live/decks.json");
                 if (decksRes.ok) {
                     const decks = await decksRes.json();
                     const filtered = userInput
