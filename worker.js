@@ -34,7 +34,9 @@ export default {
                 if (!decksRes.ok) throw new Error("Failed to fetch decks data.");
                 decksArr = await decksRes.json();
                 decks = Array.isArray(decksArr) ? decksArr.filter(d => d.title) : [];
-                helpArr = Array.isArray(decksArr) ? decksArr.filter(d => d.id && d.text) : [];
+                helpArr = Array.isArray(decksArr)
+                    ? decksArr.filter(obj => typeof obj.id === "string" && typeof obj.text === "string")
+                    : [];
             }
             return { decks, helpArr };
         }
@@ -74,7 +76,7 @@ export default {
                             const firstCardLink = firstCard?.link;
                             let helpText = "";
                             if (firstCard?.help) {
-                                const helpObj = helpArr.find(h => h.id === firstCard.help);
+                                const helpObj = helpArr.find(h => String(h.id) === String(firstCard.help));
                                 if (helpObj && helpObj.text) {
                                     helpText = helpObj.text;
                                 }
@@ -414,7 +416,7 @@ export default {
                         const cardLink = card?.link;
                         let helpText = "";
                         if (card?.help) {
-                            const helpObj = helpArr.find(h => h.id === card.help);
+                            const helpObj = helpArr.find(h => String(h.id) === String(card.help));
                             if (helpObj && helpObj.text) {
                                 helpText = helpObj.text;
                             }
