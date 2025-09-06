@@ -30,6 +30,24 @@ export default {
         if (json.type == 2) {
             const command_name = json.data.name;
 
+            if (command_name === "version") {
+                try {
+                    const versionRes = await fetch("https://api.grab-tutorials.live/version");
+                    const versionText = await versionRes.text();
+                    return Response.json({
+                        type: 4,
+                        data: {
+                            content: versionText
+                        }
+                    });
+                } catch (err) {
+                    return Response.json({
+                        type: 4,
+                        data: { content: "Failed" }
+                    });
+                }
+            }
+
             if (command_name === "deck") {
                 const deckNameInput = json.data.options?.find(opt => opt.name === "name")?.value || "";
                 const deckNameLower = deckNameInput.toLowerCase();
@@ -535,3 +553,4 @@ export default {
 
     },
 };
+
