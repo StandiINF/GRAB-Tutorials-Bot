@@ -418,16 +418,26 @@ export default {
                                 },
                             });
 
-                            const cachedResponse = new Response(discordResponse.body, discordResponse);
-                            cachedResponse.headers.append("Cache-Control", "public, max-age=300");
-                            ctx.waitUntil(cache.put(cacheKey, cachedResponse.clone()));
+                            const cachedResponse = new Response(JSON.stringify({
+                                type: 4,
+                                data: {
+                                    content: content,
+                                    allowed_mentions: { parse: [] }
+                                },
+                            }), {
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Cache-Control': 'public, max-age=300'
+                                }
+                            });
+                            ctx.waitUntil(cache.put(cacheKey, cachedResponse));
                             return discordResponse;
 
                         } else {
                             return Response.json({
                                 type: 4,
                                 data: {
-                                    content: "Failed to fetch.",
+                                    content: "Failed to fetch version information from the API.",
                                     allowed_mentions: { parse: [] }
                                 },
                             });
@@ -437,7 +447,7 @@ export default {
                         return Response.json({
                             type: 4,
                             data: {
-                                content: "An error occurred.",
+                                content: "An error occurred while getting the version.",
                                 allowed_mentions: { parse: [] }
                             },
                         });
