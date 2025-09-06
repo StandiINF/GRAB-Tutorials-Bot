@@ -57,4 +57,3 @@ export const commands = [
     contexts: [0, 1, 2]
   }
 ];
-];
