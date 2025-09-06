@@ -380,80 +380,54 @@ export default {
             }
 
             if (command_name === "version") {
-                const cacheUrl = new URL(request.url);
-                const cacheKey = new Request(cacheUrl.toString(), request);
-                const cache = caches.default;
-
-                let response = await cache.match(cacheKey);
-
-                if (!response) {
-                    try {
-                        const apiResponse = await fetch("https://graph.oculus.com/graphql", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
+                try {
+                    const apiResponse = await fetch("https://graph.oculus.com/graphql", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            access_token: env.OCULUS_ACCESS_TOKEN,
+                            variables: {
+                                id: "4104088956355944",
+                                first: 1,
                             },
-                            body: JSON.stringify({
-                                access_token: env.OCULUS_ACCESS_TOKEN,
-                                variables: {
-                                    id: "4104088956355944",
-                                    first: 1,
-                                },
-                                doc_id: "4410563505712309",
-                                doc: ""
-                            }),
-                        });
+                            doc_id: "4410563505712309",
+                            doc: ""
+                        }),
+                    });
 
-                        if (apiResponse.ok) {
-                            const data = await apiResponse.json();
-                            const version = data.data.node.primary_binaries.edges[0].node.version;
-                            const build = data.data.node.primary_binaries.edges[0].node.version_code;
-                            const content = `**v${version}** - Build **${build}**`;
+                    if (apiResponse.ok) {
+                        const data = await apiResponse.json();
+                        const version = data.data.node.primary_binaries.edges[0].node.version;
+                        const build = data.data.node.primary_binaries.edges[0].node.version_code;
+                        const content = `**v${version}** - Build **${build}**`;
 
-                            const discordResponse = Response.json({
-                                type: 4,
-                                data: {
-                                    content: content,
-                                    allowed_mentions: { parse: [] }
-                                },
-                            });
-
-                            const cachedResponse = new Response(JSON.stringify({
-                                type: 4,
-                                data: {
-                                    content: content,
-                                    allowed_mentions: { parse: [] }
-                                },
-                            }), {
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'Cache-Control': 'public, max-age=300'
-                                }
-                            });
-                            ctx.waitUntil(cache.put(cacheKey, cachedResponse));
-                            return discordResponse;
-
-                        } else {
-                            return Response.json({
-                                type: 4,
-                                data: {
-                                    content: "Failed to fetch version information from the API.",
-                                    allowed_mentions: { parse: [] }
-                                },
-                            });
-                        }
-                    } catch (e) {
-                        console.error("Error fetching version:", e);
                         return Response.json({
                             type: 4,
                             data: {
-                                content: "An error occurred while getting the version.",
+                                content: content,
+                                allowed_mentions: { parse: [] }
+                            },
+                        });
+                    } else {
+                        return Response.json({
+                            type: 4,
+                            data: {
+                                content: "Failed to fetch version information from the API.",
                                 allowed_mentions: { parse: [] }
                             },
                         });
                     }
-                } else {
-                    return response;
+                } catch (e) {
+                    console.error("Error fetching version:", e);
+                    return Response.json({
+                        type: 4,
+                        data: {
+                            content: "An error occurred while getting the version.",
+                            allowed_mentions: { parse: [] }
+                        },
+                    });
                 }
             }
         }
