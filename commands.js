@@ -47,13 +47,5 @@ export const commands = [
     ],
     integration_types: [0, 1],
     contexts: [0, 1, 2]
-  },
-
-  {
-    name: "version",
-    description: "Show the latest GRAB version and Build Number!",
-    options: [],
-    integration_types: [0, 1],
-    contexts: [0, 1, 2]
   }
 ];
