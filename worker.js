@@ -399,8 +399,8 @@ export default {
 
                     if (apiResponse.ok) {
                         const data = await apiResponse.json();
-                        const version = data.data.node.primary_binaries.edges[0].node.version;
-                        const build = data.data.node.primary_binaries.edges[0].node.version_code;
+                        const version = data.data.node.primary_binaries.edges[0].version;
+                        const build = data.data.node.primary_binaries.edges[0].version_code;
                         const content = `**v${version}** - Build **${build}**`;
 
                         return Response.json({
@@ -584,4 +584,5 @@ export default {
 
     },
 };
+
 
