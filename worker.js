@@ -4,6 +4,7 @@ import { Buffer } from 'node:buffer';
 export default {
     async fetch(request, env, ctx) {
 
+        // Handle invalid requests
         const signature = request.headers.get("x-signature-ed25519");
         const timestamp = request.headers.get("x-signature-timestamp");
         const body = await request.text();
@@ -14,9 +15,10 @@ export default {
         );
 
         if (!isVerified) {
-            return new Response("invalid request signature", { status: 401 });
+            return new Response("invalid request signature", {status: 401});
         }
 
+        // Handle ping requests
         const json = JSON.parse(body);
         if (json.type == 1) {
             return Response.json({
@@ -24,6 +26,7 @@ export default {
             });
         }
 
+        // Handle command requests
         if (json.type == 2) {
             const command_name = json.data.name;
 
@@ -73,7 +76,7 @@ export default {
                                             }
                                         }
                                     } catch (e) {
-                                        //
+                                        // 
                                     }
                                 }
                                 if (firstCardLink) {
@@ -378,63 +381,11 @@ export default {
                     }
                 }
             }
-
-            if (command_name === "version") {
-                try {
-                    const apiResponse = await fetch("https://graph.oculus.com/graphql", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            access_token: env.OCULUS_ACCESS_TOKEN,
-                            variables: {
-                                id: "4104088956355944",
-                                first: 1,
-                            },
-                            doc_id: "4410563505712309",
-                            doc: ""
-                        }),
-                    });
-
-                    if (apiResponse.ok) {
-                        const data = await apiResponse.json();
-                        const version = data.data.node.primary_binaries.edges[0].version;
-                        const build = data.data.node.primary_binaries.edges[0].version_code;
-                        const content = `**v${version}** - Build **${build}**`;
-
-                        return Response.json({
-                            type: 4,
-                            data: {
-                                content: content,
-                                allowed_mentions: { parse: [] }
-                            },
-                        });
-                    } else {
-                        return Response.json({
-                            type: 4,
-                            data: {
-                                content: "Failed to fetch version information from the API.",
-                                allowed_mentions: { parse: [] }
-                            },
-                        });
-                    }
-                } catch (e) {
-                    console.error("Error fetching version:", e);
-                    return Response.json({
-                        type: 4,
-                        data: {
-                            content: "An error occurred while getting the version.",
-                            allowed_mentions: { parse: [] }
-                        },
-                    });
-                }
-            }
         }
 
         if (json.type == 3 && json.data.custom_id?.startsWith("deck_")) {
 
-            const [, direction, deckName, indexStr] = json.data.custom_id.split("_");
+            const [ , direction, deckName, indexStr ] = json.data.custom_id.split("_");
             const deckNameLower = deckName.toLowerCase();
             const currentIndex = parseInt(indexStr, 10);
 
@@ -482,7 +433,7 @@ export default {
                                         }
                                     }
                                 } catch (e) {
-                                    //
+                                    // 
                                 }
                             }
                             if (cardLink) {
@@ -572,7 +523,7 @@ export default {
                     });
                 }
             } catch (e) {
-                //
+                // 
             }
             return Response.json({
                 type: 8,
@@ -580,9 +531,7 @@ export default {
             });
         }
 
-        return new Response("invalid request type", { status: 400 });
+        return new Response("invalid request type", {status: 400});
 
     },
 };
-
-
