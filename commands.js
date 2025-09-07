@@ -1,11 +1,11 @@
 export const commands = [
   {
     name: "deck",
-    description: "Get a deck's cards",
+    description: "Preview a deck",
     options: [
       {
         name: "name",
-        description: "The name of the deck",
+        description: "The title of the deck",
         type: 3,
         required: true,
         autocomplete: true
@@ -17,22 +17,22 @@ export const commands = [
 
   {
     name: "account",
-    description: "Account management for GRAB Tutorials",
+    description: "Account commands",
     options: [
       {
         type: 1,
         name: "info",
-        description: "Show the GRAB Tutorials account linked to your Discord account",
+        description: "Show your linked account",
         options: []
       },
       {
         type: 1,
         name: "link",
-        description: "Link your site account to this bot",
+        description: "Link your account",
         options: [
           {
             name: "code",
-            description: "Code from the site",
+            description: "Code given from the site",
             type: 3,
             required: true
           }
@@ -41,7 +41,7 @@ export const commands = [
       {
         type: 1,
         name: "unlink",
-        description: "Unlink your Discord account from the site",
+        description: "Unlink your account",
         options: []
       }
     ],
@@ -51,7 +51,7 @@ export const commands = [
 
   {
     name: "version",
-    description: "Show the latest GRAB version and Build Number!",
+    description: "Show the latest GRAB version and Build Number",
     options: [],
     integration_types: [0, 1],
     contexts: [0, 1, 2]
