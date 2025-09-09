@@ -187,7 +187,7 @@ export default {
                             return Response.json({
                                 type: 4,
                                 data: {
-                                    content: "You aren't logged in.",
+                                    content: "You aren't linked.",
                                     allowed_mentions: { parse: [] }
                                 }
                             });
