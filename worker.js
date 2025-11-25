@@ -97,6 +97,13 @@ export default {
                                         // 
                                     }
                                 }
+                                let downloadLine = "";
+                                if (firstCard?.download) {
+                                    const dl = firstCard.download;
+                                    const dlUrl = (typeof dl === "string" && dl.startsWith("http")) ? dl : `https://assets.grab-tutorials.live/${dl}`;
+                                    downloadLine = `\n\n[Download level link](${dlUrl})`;
+                                }
+
                                 if (firstCardLink) {
                                     return Response.json({
                                         type: 4,
@@ -112,7 +119,7 @@ export default {
                                                         width: 300,
                                                         height: 154.91
                                                     },
-                                                    description: `*Card 1 of ${cardKeys.length}*${helpText ? `\n\n*${helpText}*` : ""}`
+                                                    description: `*Card 1 of ${cardKeys.length}*${downloadLine}${helpText ? `\n\n*${helpText}*` : ""}`
                                                 }
                                             ],
                                             components: [
@@ -454,6 +461,13 @@ export default {
                                     // 
                                 }
                             }
+                            let downloadLine = "";
+                            if (card?.download) {
+                                const dl = card.download;
+                                const dlUrl = (typeof dl === "string" && dl.startsWith("http")) ? dl : `https://assets.grab-tutorials.live/${dl}`;
+                                downloadLine = `\n\n[Download level link](${dlUrl})`;
+                            }
+
                             if (cardLink) {
                                 return Response.json({
                                     type: 7,
@@ -468,7 +482,7 @@ export default {
                                                     width: 300,
                                                     height: 154.91
                                                 },
-                                                description: `*Card ${newIndex + 1} of ${cardKeys.length}*${helpText ? `\n\n*${helpText}*` : ""}`
+                                                description: `*Card ${newIndex + 1} of ${cardKeys.length}*${downloadLine}${helpText ? `\n\n*${helpText}*` : ""}`
                                             }
                                         ],
                                         components: [
