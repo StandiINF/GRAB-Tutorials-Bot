@@ -101,7 +101,7 @@ export default {
                                 if (found?.download) {
                                     const dl = found.download;
                                     const dlUrl = (typeof dl === "string" && dl.startsWith("http")) ? dl : `https://assets.grab-tutorials.live/${dl}`;
-                                    downloadLine = `\n\n[Download level link](${dlUrl})`;
+                                    downloadLine = `\n\n[Download level file](${dlUrl})`;
                                 }
 
                                 if (firstCardLink) {
@@ -465,7 +465,7 @@ export default {
                             if (found?.download) {
                                 const dl = found.download;
                                 const dlUrl = (typeof dl === "string" && dl.startsWith("http")) ? dl : `https://assets.grab-tutorials.live/${dl}`;
-                                downloadLine = `\n\n[Download level link](${dlUrl})`;
+                                downloadLine = `\n\n[Download level file](${dlUrl})`;
                             }
 
                             if (cardLink) {
@@ -567,4 +567,5 @@ export default {
 
     },
 };
+
 
