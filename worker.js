@@ -116,8 +116,8 @@ export default {
                                                     color,
                                                     image: {
                                                         url: `https://assets.grab-tutorials.live/${firstCardLink}`,
-                                                        width: 300,
-                                                        height: 154.91
+                                                        width: 1300,
+                                                        height: 671.3
                                                     },
                                                     description: `*Card 1 of ${cardKeys.length}*${downloadLine}${helpText ? `\n\n*${helpText}*` : ""}`
                                                 }
