@@ -424,7 +424,7 @@ export default {
                                     {
                                         title: userData.user_name,
                                         color: userData.primaryColour ? parseInt(userData.primaryColour.replace("#", ""), 16) : 0x000000,
-                                        description: `**Primary Color:** ${userData.primaryColour}\n**Secondary Color:** ${userData.secondaryColour}\n**Last Online:** <t:${lastOnlineSecs}:R>\n-#Time recorded when you last logged into grab-tutorials.live, not last on GRAB.`,
+                                        description: `**Primary Color:** ${userData.primaryColour}\n**Secondary Color:** ${userData.secondaryColour}\n**Last Online:** <t:${lastOnlineSecs}:R>\n*Time recorded when you last logged into grab-tutorials.live, not last on GRAB.*`,
                                     }
                                 ],
                             }
