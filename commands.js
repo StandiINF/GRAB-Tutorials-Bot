@@ -55,5 +55,20 @@ export const commands = [
     options: [],
     integration_types: [0, 1],
     contexts: [0, 1, 2]
+  },
+
+  {
+    name: "user",
+    description: "Get a user's details (data from grab-tutorials.live, not grabvr.quest).",
+    options: [
+      {
+        name: "username",
+        description: "User's username.",
+        type: 3,
+        required: true
+      }
+    ],
+    integration_types: [0, 1],
+    contexts: [0, 1, 2]
   }
 ];

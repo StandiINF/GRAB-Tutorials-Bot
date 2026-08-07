@@ -404,6 +404,44 @@ export default {
                     }
                 }
             }
+
+            if (command_name === "user") {
+                const usernameInput = json.data.options?.find(opt => opt.name === "username")?.value || "";
+
+                const userUrl = `https://api.grab-tutorials.live/user_details?username=${encodeURIComponent(usernameInput)}`;
+                try {
+                    const userRes = await fetch(userUrl);
+                    if (userRes.ok) {
+                        const userData = await userRes.json();
+                        let lastOnline = userData.lastOnline || "Unknown";
+                        lastOnlineSecs = Math.floor(lastOnline / 1000);
+                        return Response.json({
+                            type: 4,
+                            data: {
+                                tts: false,
+                                content: "",
+                                embeds: [
+                                    {
+                                        title: userData.username || "Unknown User",
+                                        color: userData.primaryColour ? parseInt(userData.primaryColour.replace("#", ""), 16) : 0x000000,
+                                        description: `**Primary Color:** ${userData.primaryColour}\n**Secondary Color:** ${userData.secondaryColour}\n**Last Online:** <t:${lastOnlineSecs}:R>`,
+                                    }
+                                ],
+                            }
+                        });
+                    }
+                    else {
+                        return Response.json({
+                            type: 4,
+                            data: {
+                                content: "Couldn't find user."
+                            }
+                        });
+                    }
+                } catch (userErr) {
+                    console.error("Error fetching user details:", userErr);
+                }
+            }
         }
 
         if (json.type == 3 && json.data.custom_id?.startsWith("deck_")) {
