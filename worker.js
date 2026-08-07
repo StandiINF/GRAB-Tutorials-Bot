@@ -414,7 +414,7 @@ export default {
                     if (userRes.ok) {
                         const userData = await userRes.json();
                         let lastOnline = userData.lastOnline || "Unknown";
-                        lastOnlineSecs = Math.floor(lastOnline / 1000);
+                        let lastOnlineSecs = Math.floor(lastOnline / 1000);
                         return Response.json({
                             type: 4,
                             data: {
